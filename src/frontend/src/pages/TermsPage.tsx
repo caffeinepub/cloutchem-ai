@@ -20,7 +20,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">1. Acceptance of Terms</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                By accessing and using CloutChem AI, you accept and agree to be bound by the terms and provision of this agreement. 
+                By accessing and using CloudCam AI, you accept and agree to be bound by the terms and provision of this agreement. 
                 If you do not agree to these terms, please do not use our service.
               </p>
             </section>
@@ -29,13 +29,13 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">2. Use License</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                Permission is granted to temporarily access and use CloutChem AI for personal, non-commercial purposes. 
+                Permission is granted to temporarily access and use CloudCam AI for personal, non-commercial purposes. 
                 This is the grant of a license, not a transfer of title, and under this license you may not:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4 text-muted-foreground">
                 <li>Modify or copy the materials</li>
                 <li>Use the materials for any commercial purpose or public display</li>
-                <li>Attempt to reverse engineer any software contained in CloutChem AI</li>
+                <li>Attempt to reverse engineer any software contained in CloudCam AI</li>
                 <li>Remove any copyright or proprietary notations from the materials</li>
               </ul>
             </section>
@@ -44,9 +44,10 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">3. User Accounts</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                When you create an account with us, you are responsible for maintaining the security of your account and you are fully 
-                responsible for all activities that occur under the account. You must immediately notify us of any unauthorized uses of 
-                your account or any other breaches of security.
+                When you create an account with CloudCam AI using Internet Identity, you are responsible for maintaining the security 
+                of your Internet Identity credentials. CloudCam AI uses Internet Identity for passwordless authentication, and you are 
+                fully responsible for all activities that occur under your account. You must immediately notify us of any unauthorized 
+                uses of your account or any other breaches of security.
               </p>
             </section>
 
@@ -77,7 +78,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">6. Prohibited Uses</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                You may not use CloutChem AI for any illegal or unauthorized purpose. You must not, in the use of the service, 
+                You may not use CloudCam AI for any illegal or unauthorized purpose. You must not, in the use of the service, 
                 violate any laws in your jurisdiction including but not limited to copyright laws.
               </p>
             </section>
@@ -86,7 +87,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">7. Disclaimer</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                The materials on CloutChem AI are provided on an 'as is' basis. We make no warranties, expressed or implied, and 
+                The materials on CloudCam AI are provided on an 'as is' basis. We make no warranties, expressed or implied, and 
                 hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of 
                 merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
               </p>
@@ -96,9 +97,9 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">8. Limitations</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                In no event shall CloutChem AI or its suppliers be liable for any damages (including, without limitation, damages for 
+                In no event shall CloudCam AI or its suppliers be liable for any damages (including, without limitation, damages for 
                 loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on 
-                CloutChem AI, even if we or our authorized representative has been notified orally or in writing of the possibility of such damage.
+                CloudCam AI, even if we or our authorized representative has been notified orally or in writing of the possibility of such damage.
               </p>
             </section>
 
@@ -106,7 +107,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-foreground">9. Revisions</h2>
               <Separator className="opacity-20" />
               <p className="leading-relaxed">
-                We may revise these terms of service at any time without notice. By using CloutChem AI you are agreeing to be bound 
+                We may revise these terms of service at any time without notice. By using CloudCam AI you are agreeing to be bound 
                 by the then current version of these terms of service.
               </p>
             </section>

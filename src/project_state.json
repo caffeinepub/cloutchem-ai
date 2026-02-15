@@ -1,40 +1,46 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "CloudCam AI: add required user authentication via Internet Identity (basic sign-up/login only).",
+  "summary": "CloudCam AI: build a login-gated social media app with custom backend username/password accounts, user profiles (username + profile picture), and public/private media posts stored permanently in the backend, including feed, friends, likes, and comments; subscription gating for profile customization and feed access.",
   "architectural_notes": [
-    "Authentication must use Internet Identity only; custom email/password accounts are not supported on the platform."
+    "Use backend canister as the system of record for users, profiles, and media storage (permanent).",
+    "Username validation: 3–20 chars; [A-Za-z0-9_.]; unique; change allowed once every 30 days; offensive word filtering.",
+    "Media constraints: images JPG/PNG/GIF <=10MB; videos MP4/MOV <=50MB; optional max length 2–3 minutes; soft cap 100 media items/user with near-limit notifications.",
+    "Per-post visibility model: public by default with optional private toggle.",
+    "Access control: fully gated behind login; subscription required for profile customization and feed access."
   ],
-  "known_issues": [],
+  "known_issues": [
+    "Previous build attempt failed with 'AI was unable to implement your request'; may need retry/simplification if build continues failing."
+  ],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-make-internet-identity-the-only-supported-sign-up-login-method-for-cloudcam-ai-and-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route",
-      "title": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
+      "id": "feature-do-not-implement-a-custom-backend-username-password-authentication-system-keep-internet-identity-as-the-only-sign-up-login-method-and-ensure-the-ui-copy-consistently-describes-internet-identity-as-the-authentication-mechanism",
+      "title": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-require-authentication-internet-identity-to-use-cloudcam-ai-features-by-enforcing-route-protection-for-all-feature-pages-at-minimum-dashboard-and-camera-and-redirecting-unauthenticated-users-to-login",
-      "title": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
+      "id": "feature-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route-and-that-unauthenticated-users-are-redirected-to-login-when-attempting-to-access-protected-routes-at-minimum-dashboard-and-camera",
+      "title": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-without-requiring-any-additional-profile-fields-beyond-what-already-exists-principal-createdat-tier",
-      "title": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
+      "id": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-using-the-existing-backend-profile-record-principal-createdat-tier-and-the-existing-getcalleruserprofile-flow",
+      "title": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-replacing-inconsistent-references-e-g-cloutchem-ai",
-      "title": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
+      "id": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-including-fixing-the-html-document-title-currently-using-the-old-name",
+      "title": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
       "reqIds": [
         "REQ-4"
       ],
@@ -44,11 +50,54 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Implement required user accounts (sign-up/login) using Internet Identity only; basic authentication only (no additional profile data yet).",
+      "summary": "Implement custom backend username/password user account system (sign up, login)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add user profile feature with unique username and editable profile picture (bio optional later)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add username editing restrictions (3–20 chars; letters/numbers/_/.; unique; 30-day change cooldown; offensive word block)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Enable media uploads to user profile (images/videos) with per-post public default and optional private toggle",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Store uploaded media permanently in backend storage with limits (100 items/user; image 10MB; video 50MB; optional 2–3 min length; notify near limit; future subscriber higher limits)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Build a feed showing own posts and friends/other users' posts; support likes and comments",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add friend system (add friends; view friends’ posts)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Gate access behind login; require subscription to customize profile and access feed",
       "reqIds": [],
       "status": "pending"
     }
   ],
+  "gameProjectType": "none",
   "projectName": "CloudCam AI",
   "clarification_mode": "instant",
   "clarification_rounds": 0

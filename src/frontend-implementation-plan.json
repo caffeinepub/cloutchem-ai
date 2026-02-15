@@ -1,104 +1,106 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "CloudCam AI Internet Identity-only authentication, protected routes, and consistent branding",
+  "title": "CloudCam AI Internet Identity-only auth flow, protected routes, profile bootstrapping, and branding fixes",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure Internet Identity is the only login method and the /login route provides a clear, working Internet Identity sign-in flow.",
+      "summary": "Ensure Internet Identity is the only sign-up/login method and all UI copy reflects passwordless Internet Identity authentication (no username/password UI).",
       "acceptanceCriteria": [
-        "When unauthenticated, users can navigate to /login and initiate an Internet Identity login.",
-        "The login UI clearly indicates authentication is handled via Internet Identity (no email/password UI is presented).",
-        "On successful login, the user is considered authenticated in the app shell (header/navigation updates accordingly)."
+        "There is no username/password registration or login API added to the backend canister.",
+        "All user-facing authentication text refers to Internet Identity (passwordless) and does not mention creating a CloudCam AI password."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Update the /login UI copy to reference “CloudCam AI” and clearly indicate Internet Identity is used; keep only Internet Identity controls (no email/password). Use existing Internet Identity auth via the authorization component’s frontend guidance; verify the component's usage instructions before implementing."
+          "description": "Audit and update authentication-related copy to consistently describe Internet Identity as the only (passwordless) sign-in method; ensure no strings imply a CloudCam AI password or custom credentials. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/components/layout/Header.tsx",
           "operation": "modify",
-          "description": "Ensure the authenticated app shell state is clearly reflected in the header (sign-in vs sign-out controls) using the existing Internet Identity state. Use the authorization component’s frontend guidance for login/logout behaviors (including clearing cached data on logout); verify the component's usage instructions before implementing."
+          "description": "Update header auth CTA labels/copy (e.g., logged-out 'Sign In') to explicitly reference Internet Identity and avoid any password/username implication. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/TermsPage.tsx",
+          "operation": "modify",
+          "description": "Update account/authentication terms copy so it references CloudCam AI + Internet Identity login (passwordless) where applicable and does not suggest CloudCam AI password accounts. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Protect feature routes (Dashboard and Camera at minimum) so unauthenticated users are redirected to /login, and ensure logout immediately removes access to protected routes.",
+      "summary": "Make the /login route the entry point for authentication and enforce redirects to /login for unauthenticated access to protected routes (/dashboard and /camera), with post-login redirect to /dashboard.",
       "acceptanceCriteria": [
-        "Visiting /dashboard while logged out redirects to /login.",
-        "Visiting /camera while logged out redirects to /login.",
-        "After logging out, protected routes are no longer accessible until logging back in."
+        "When not authenticated, navigating to /dashboard redirects to /login.",
+        "When not authenticated, navigating to /camera redirects to /login.",
+        "After successful Internet Identity login, the user is redirected to /dashboard."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Review and harden route protection for /dashboard and /camera so unauthenticated users are redirected to /login (keep using router-level guards). Ensure route protection relies on Internet Identity authentication state per the authorization component’s frontend guidance; verify the component's usage instructions before implementing."
+          "description": "Verify and harden route protection for /dashboard and /camera using router guards, ensuring unauthenticated navigation reliably redirects to /login (including direct URL entry/refresh). Keep the existing Internet Identity-based auth context approach. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/Header.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "After logout, proactively navigate the user to /login (in addition to clearing Internet Identity + React Query cache) so protected content is not left visible on-screen. Follow the authorization component’s guidance to clear cached application data on logout; verify the component's usage instructions before implementing."
+          "description": "Confirm post-login navigation always routes authenticated users to /dashboard (and does not leave users on /login). Ensure errors are handled without breaking redirect behavior. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Automatically ensure a basic user account record exists for each authenticated principal on first use, without requiring extra profile fields.",
+      "summary": "On first authenticated use, trigger backend profile auto-creation via the existing getCallerUserProfile flow and consistently load the persisted profile for the principal on subsequent visits/reloads.",
       "acceptanceCriteria": [
-        "After first successful login, fetching the caller profile results in an existing profile (auto-created if missing).",
-        "Creating a profile is safe to call multiple times for the same principal (does not trap or corrupt state).",
-        "No new profile fields beyond the existing principal/createdAt/tier are required to complete account setup."
+        "After logging in with Internet Identity and visiting the dashboard, a caller profile exists in the backend (auto-created if missing).",
+        "Refreshing the dashboard continues to load the same persisted profile data for that principal (createdAt remains stable across reloads)."
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Align profile loading with the available backend interface and add an idempotent “ensure profile exists” flow: when authenticated, check whether a profile exists for the current principal and, if missing, create it by saving a minimal UserProfile (principal, createdAt, tier) before re-fetching. Use Internet Identity principal and follow the authorization component’s frontend guidance around profile setup and avoiding modal/flash states; verify the component's usage instructions before implementing."
+          "description": "Adjust the current-user profile query to align with the authorization component’s frontend guidance: only run getCallerUserProfile when the actor is ready and the user is authenticated; keep a stable query key and ensure loading state prevents UI flash. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/DashboardPage.tsx",
           "operation": "modify",
-          "description": "Adjust dashboard usage of profile hooks so the page behaves correctly during the first-login auto-create flow (loading and error states remain clear; no extra profile fields are requested). Use the authorization component’s guidance for authenticated data access patterns; verify the component's usage instructions before implementing."
+          "description": "Ensure the dashboard reliably triggers the caller profile load (which auto-creates if missing) and renders sensible states for loading/authorization errors, while continuing to display persisted profile fields across refreshes. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/Header.tsx",
+          "operation": "modify",
+          "description": "Confirm logout clears cached application data (including the cached user profile) per the authorization component guidance (retain/ensure queryClient.clear + navigation behavior). Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Replace inconsistent branding text so the UI consistently uses the product name “CloudCam AI” in English.",
+      "summary": "Update UI branding to consistently use “CloudCam AI” everywhere, including the HTML document title.",
       "acceptanceCriteria": [
-        "Login page text references “CloudCam AI” (not “CloutChem AI”) in the sign-in messaging.",
-        "Header/landing/dashboard user-facing text uses “CloudCam AI” consistently.",
-        "No new non-English user-facing strings are introduced as part of this change."
+        "The browser tab title uses “CloudCam AI” (not “CloutChem AI”).",
+        "No visible UI strings show the old product name."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/LoginPage.tsx",
+          "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Replace any remaining “CloutChem AI” references with “CloudCam AI” in user-facing login messaging (English only)."
+          "description": "Update the HTML document title to “CloudCam AI” to fix the browser tab title branding. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/TermsPage.tsx",
+          "operation": "modify",
+          "description": "Replace remaining visible occurrences of the old product name with “CloudCam AI” throughout the Terms UI text. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/LandingPage.tsx",
           "operation": "modify",
-          "description": "Replace user-facing marketing/CTA references from “CloutChem AI” to “CloudCam AI” (English only), including hero and CTA sections. Ensure any existing hero imagery references remain wired correctly; if using generated assets, reference the existing files at frontend/public/assets/generated/cloutchem-hero-bg.dim_1920x1080.png."
+          "description": "Audit and update any remaining visible branding strings to “CloudCam AI” (ensure no old-name text is rendered in headings, descriptions, CTAs). Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/DashboardPage.tsx",
           "operation": "modify",
-          "description": "Replace the dashboard welcome/header branding text from “CloutChem AI” to “CloudCam AI” (English only)."
-        },
-        {
-          "path": "frontend/src/components/layout/Header.tsx",
-          "operation": "modify",
-          "description": "Update logo alt text and any header-visible branding text to “CloudCam AI” (English only). Ensure the existing generated logo asset remains correctly referenced at frontend/public/assets/generated/cloutchem-logo.dim_512x192.png."
-        },
-        {
-          "path": "frontend/src/components/layout/Footer.tsx",
-          "operation": "modify",
-          "description": "Replace footer copyright/identifier text from “CloutChem AI” to “CloudCam AI” (English only), including any default identifiers that appear in user-facing contexts."
+          "description": "Audit and update any remaining visible branding strings to “CloudCam AI” (ensure no old-name text is rendered). Verify the component's usage instructions before implementing."
         }
       ]
     }

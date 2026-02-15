@@ -1,108 +1,94 @@
 {
   "kind": "build_request",
-  "title": "Implement required user accounts for CloudCam AI using Internet Identity",
+  "title": "Implement sign-up/login using Internet Identity (not custom username/password) and finalize CloudCam AI login-gated account creation flow",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
-      "target": "frontend",
+      "text": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-9",
-          "msg-12"
+          "msg-1",
+          "msg-2",
+          "msg-3"
         ],
         "quotes": [
-          "Add a user account feature to CloudCam AI so users can sign up and log in.",
-          "for number one it can be both",
-          "yes"
+          "Add a user account system to CloudCam AI so users can sign up and log in.",
+          "yes and built into backend",
+          "yes plz"
         ]
       },
       "acceptanceCriteria": [
-        "When unauthenticated, users can navigate to /login and initiate an Internet Identity login.",
-        "The login UI clearly indicates authentication is handled via Internet Identity (no email/password UI is presented).",
-        "On successful login, the user is considered authenticated in the app shell (header/navigation updates accordingly)."
+        "There is no username/password registration or login API added to the backend canister.",
+        "All user-facing authentication text refers to Internet Identity (passwordless) and does not mention creating a CloudCam AI password."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
+      "text": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-8"
+          "msg-4"
         ],
         "quotes": [
-          "3 required"
+          "build now"
         ]
       },
       "acceptanceCriteria": [
-        "Visiting /dashboard while logged out redirects to /login.",
-        "Visiting /camera while logged out redirects to /login.",
-        "After logging out, protected routes are no longer accessible until logging back in."
+        "When not authenticated, navigating to /dashboard redirects to /login.",
+        "When not authenticated, navigating to /camera redirects to /login.",
+        "After successful Internet Identity login, the user is redirected to /dashboard."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
+      "text": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-7",
-          "msg-9"
+          "msg-4"
         ],
         "quotes": [
-          "for number 2 just the basic login for now",
-          "yes"
+          "build now"
         ]
       },
       "acceptanceCriteria": [
-        "After first successful login, fetching the caller profile results in an existing profile (auto-created if missing).",
-        "Creating a profile is safe to call multiple times for the same principal (does not trap or corrupt state).",
-        "No new profile fields beyond the existing principal/createdAt/tier are required to complete account setup."
+        "After logging in with Internet Identity and visiting the dashboard, a caller profile exists in the backend (auto-created if missing).",
+        "Refreshing the dashboard continues to load the same persisted profile data for that principal (createdAt remains stable across reloads)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
+      "text": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "Add a user account feature to CloudCam AI so users can sign up and log in."
+          "build now"
         ]
       },
       "acceptanceCriteria": [
-        "Login page text references “CloudCam AI” (not “CloutChem AI”) in the sign-in messaging.",
-        "Header/landing/dashboard user-facing text uses “CloudCam AI” consistently.",
-        "No new non-English user-facing strings are introduced as part of this change."
+        "The browser tab title uses “CloudCam AI” (not “CloutChem AI”).",
+        "No visible UI strings show the old product name."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if a state upgrade is required.",
-    "Do not modify any files under frontend/src/components/ui or any paths listed as immutable: frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if persistent state schema changes.",
+    "Do not edit any files under frontend/src/components/ui or other paths listed as immutable: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Custom username/password authentication is not supported on this platform; authentication must use Internet Identity."
   ],
   "nonGoals": [
-    "Implementing custom email/password authentication.",
-    "Adding expanded user profile fields (e.g., username, bio, avatar) beyond the existing basic account record.",
-    "Adding third-party auth providers beyond Internet Identity."
+    "Implementing username/profile-picture profiles, username uniqueness/cooldowns/offensive-word filtering.",
+    "Implementing media uploads (images/videos), public/private post visibility, feed, friends, likes, or comments.",
+    "Adding subscriber-based gating beyond what already exists."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

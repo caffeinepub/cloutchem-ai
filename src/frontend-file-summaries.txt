@@ -21,5 +21,5 @@
   "frontend/src/pages/CameraPage.tsx": "Protected camera page component that integrates useCamera and useVideoRecorder hooks to provide a full-featured video recording and photo capture interface with live preview, playback controls, proper event handlers, and cleanup on unmount.",
   "frontend/src/components/layout/Header.tsx": "Header component with CloudCam AI logo, authenticated navigation links to Dashboard and Camera pages, and logout functionality that clears cache and navigates to /login.",
   "frontend/src/camera/useCamera.ts": "Prefabricated React hook that manages camera lifecycle including permission handling, stream management, photo capture, camera switching, and proper cleanup with comprehensive error handling.",
-  "frontend/src/pages/LoginPage.tsx": "Login page with Internet Identity authentication, displaying CloudCam AI branding and handling login flow with proper error states using 'loginError' status and redirection to dashboard on success."
+  "frontend/src/pages/LoginPage.tsx": "Login page with Internet Identity authentication, displaying CloudCam AI branding and handling login flow with proper error states using 'loginError' status (corrected from 'error') and redirection to dashboard on success."
 }

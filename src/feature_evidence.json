@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-make-internet-identity-the-only-supported-sign-up-login-method-for-cloudcam-ai-and-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route",
-      "featureTitle": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
+      "featureId": "feature-do-not-implement-a-custom-backend-username-password-authentication-system-keep-internet-identity-as-the-only-sign-up-login-method-and-ensure-the-ui-copy-consistently-describes-internet-identity-as-the-authentication-mechanism",
+      "featureTitle": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
       "files": [
-        "frontend/src/components/layout/Header.tsx",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend/src/pages/TermsPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -25,10 +25,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-require-authentication-internet-identity-to-use-cloudcam-ai-features-by-enforcing-route-protection-for-all-feature-pages-at-minimum-dashboard-and-camera-and-redirecting-unauthenticated-users-to-login",
-      "featureTitle": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
+      "featureId": "feature-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route-and-that-unauthenticated-users-are-redirected-to-login-when-attempting-to-access-protected-routes-at-minimum-dashboard-and-camera",
+      "featureTitle": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
       "files": [
-        "frontend/src/components/layout/Header.tsx"
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -47,11 +47,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-without-requiring-any-additional-profile-fields-beyond-what-already-exists-principal-createdat-tier",
-      "featureTitle": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
+      "featureId": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-using-the-existing-backend-profile-record-principal-createdat-tier-and-the-existing-getcalleruserprofile-flow",
+      "featureTitle": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/DashboardPage.tsx"
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -70,14 +69,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-replacing-inconsistent-references-e-g-cloutchem-ai",
-      "featureTitle": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
+      "featureId": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-including-fixing-the-html-document-title-currently-using-the-old-name",
+      "featureTitle": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
       "files": [
-        "frontend/src/components/layout/Footer.tsx",
-        "frontend/src/components/layout/Header.tsx",
-        "frontend/src/pages/DashboardPage.tsx",
-        "frontend/src/pages/LandingPage.tsx",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/index.html",
+        "frontend/src/pages/TermsPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",

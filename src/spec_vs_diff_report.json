@@ -1,79 +1,36 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T22:55:22.310Z",
-  "summary": "Implemented an Internet Identity-based login page and updated some UI branding to “CloudCam AI”. Added backend auto-creation of a basic user profile record. However, the diff summary does not provide clear evidence that protected-route redirects (/dashboard, /camera) are enforced, and backend persistence/permissions for user profiles across upgrades and for first-time authenticated users is not fully evidenced. Significant unrequested Stripe billing and other feature work also appears to have been added.",
+  "generatedAt": "2026-02-15T23:18:41.725Z",
+  "summary": "Implemented Internet Identity-focused login UI and updated document title branding; added backend auto-creation of user profiles via getCallerUserProfile. Evidence for route protection/redirects to /login for unauthenticated users is not present in the provided diff summary. Several non-requested UI/feature additions appear (e.g., expanded Terms of Service content and billing/subscription language).",
   "missing_requirements": [
     {
       "id": "REQ-2",
-      "requirement": "Require authentication (Internet Identity) for feature pages (at minimum: Dashboard and Camera) and redirect unauthenticated users to /login.",
-      "reason": "The diff summary references route protection in frontend/src/App.tsx, but no actual App.tsx diff content is included to verify redirects for /dashboard and /camera or behavior after logout.",
+      "requirement": "Ensure unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
+      "reason": "The diff summary does not include the router/protected-route implementation (e.g., in App.tsx) needed to verify redirects from /dashboard or /camera to /login when not authenticated. Only the /login page behavior (redirect to /dashboard when authenticated) is shown.",
       "evidence": [
-        "frontend-file-summaries.txt (mentions protected routes in frontend/src/App.tsx, but without code)"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app (principal, createdAt, tier), safe to call multiple times.",
-      "reason": "Backend shows an in-memory Map-based ensureUserProfile, but the provided snippet does not show stable storage or upgrade-safe persistence for userProfiles. Additionally, getCallerUserProfile requires an AccessControl #user permission, but the diff does not show how authenticated principals are granted #user so first-time users can successfully trigger auto-creation.",
-      "evidence": [
-        "backend/main.mo (userProfiles declared as `let userProfiles = Map.empty...`; ensureUserProfile uses userProfiles.get/add; getCallerUserProfile requires AccessControl #user)"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Update all user-facing product name/branding text to consistently say “CloudCam AI”, replacing inconsistent references (e.g., “CloutChem AI”).",
-      "reason": "User-facing text appears updated in several places, but the diff still includes prominent references to `cloutchem` assets in Header and Landing page. While filenames may not be user-visible, the diff summary does not demonstrate a complete audit/removal of inconsistent branding references across the UI.",
-      "evidence": [
-        "frontend/src/components/layout/Header.tsx (uses /assets/generated/cloutchem-logo...)",
-        "frontend/src/pages/LandingPage.tsx (uses /assets/generated/cloutchem-hero-bg...)"
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend-file-summaries.txt (mentions App.tsx protected routes but provides no code)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Stripe billing/checkout configuration and status endpoints added to the backend (stripeConfiguration, checkout session creation, session status, transform, admin-only config).",
-      "reason": "The BuildRequest is focused on required user accounts via Internet Identity and branding consistency; it does not request Stripe billing features.",
+      "description": "Expanded Terms of Service page content including sections on subscriptions/billing and account responsibilities.",
+      "reason": "BuildRequest does not ask for adding or expanding a Terms of Service page; only authentication flow and branding consistency were requested.",
       "evidence": [
-        "backend/main.mo (stripeConfiguration var; isStripeConfigured; setStripeConfiguration; createCheckoutSession; getStripeSessionStatus; transform)",
-        "backend/migration.mo (adds stripeConfiguration to NewActor)"
-      ]
-    },
-    {
-      "description": "Frontend Stripe Buy Button integration and related billing UI/components/pages (buy button script hook, buy button component, upgrade card, checkout config panel, payment success/cancel pages).",
-      "reason": "Not requested by any REQ; the request is authentication + basic account record + branding.",
-      "evidence": [
-        "frontend-file-summaries.txt (StripeBuyButton, useStripeBuyButtonScript, UpgradeToProCard, StripeCheckoutConfigPanel, PaymentSuccessPage, PaymentCancelPage, stripeCheckoutConfig)"
-      ]
-    },
-    {
-      "description": "Terms of Service page and footer link to /terms.",
-      "reason": "Not requested in the BuildRequest requirements/non-goals.",
-      "evidence": [
-        "frontend/src/components/layout/Footer.tsx (adds link to /terms)",
-        "frontend-file-summaries.txt (frontend/src/pages/TermsPage.tsx)"
-      ]
-    },
-    {
-      "description": "AI Caption Generator feature/tooling on the dashboard.",
-      "reason": "Not requested; BuildRequest focuses on authentication and basic user account record only.",
-      "evidence": [
-        "frontend/src/pages/DashboardPage.tsx (imports AICaptionGenerator)",
-        "frontend-file-summaries.txt (frontend/src/components/ai/AICaptionGenerator.tsx, frontend/src/utils/captionGenerator.ts)"
+        "frontend/src/pages/TermsPage.tsx"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.64,
   "changed_files": [
     "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/layout/Footer.tsx",
-    "frontend/src/components/layout/Header.tsx",
+    "frontend/index.html",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/LandingPage.tsx",
     "frontend/src/pages/LoginPage.tsx",
+    "frontend/src/pages/TermsPage.tsx",
     "project_state.json"
   ]
 }

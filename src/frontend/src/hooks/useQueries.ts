@@ -16,6 +16,7 @@ export function useGetCallerUserProfile() {
     retry: false,
   });
 
+  // Return custom state that properly reflects actor dependency
   return {
     ...query,
     isLoading: actorFetching || query.isLoading,

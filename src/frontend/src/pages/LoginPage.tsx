@@ -49,7 +49,7 @@ export default function LoginPage() {
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl">Secure Login</CardTitle>
             <CardDescription className="text-base">
-              We use Internet Identity for secure, passwordless authentication
+              Sign in with Internet Identity — a secure, passwordless authentication system
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -82,7 +82,7 @@ export default function LoginPage() {
             <div className="text-center text-sm text-muted-foreground space-y-2">
               <p>Don't have an Internet Identity?</p>
               <p className="text-xs">
-                You'll be guided to create one during the sign-in process
+                You'll be guided to create one during the sign-in process — no passwords required
               </p>
             </div>
           </CardContent>
