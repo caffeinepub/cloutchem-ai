@@ -3,11 +3,13 @@ import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useHasSecurityQuestions } from '../hooks/useSecurityQuestions';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { login, loginStatus, identity, loginError } = useInternetIdentity();
+  const { data: hasQuestions, isLoading: checkingQuestions } = useHasSecurityQuestions();
   const navigate = useNavigate();
 
   const isLoggingIn = loginStatus === 'logging-in';
@@ -15,10 +17,15 @@ export default function LoginPage() {
   const isAuthenticated = !!identity;
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate({ to: '/dashboard' });
+    if (isAuthenticated && !checkingQuestions) {
+      // Check if security questions are set up
+      if (hasQuestions === false) {
+        navigate({ to: '/security-questions-setup' });
+      } else if (hasQuestions === true) {
+        navigate({ to: '/dashboard' });
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, hasQuestions, checkingQuestions, navigate]);
 
   const handleLogin = async () => {
     try {

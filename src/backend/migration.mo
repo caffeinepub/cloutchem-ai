@@ -1,8 +1,9 @@
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
+import List "mo:core/List";
 
 module {
-  type UserProfile = {
+  public type OldUserProfile = {
     principal : Principal.Principal;
     createdAt : Int;
     tier : {
@@ -11,19 +12,33 @@ module {
     };
   };
 
-  type OldActor = {
-    userProfiles : Map.Map<Principal.Principal, UserProfile>;
+  public type OldActor = {
+    userProfiles : Map.Map<Principal.Principal, OldUserProfile>;
   };
 
-  type NewActor = {
-    userProfiles : Map.Map<Principal.Principal, UserProfile>;
-    stripeConfiguration : ?{
-      secretKey : Text;
-      allowedCountries : [Text];
+  public type NewUserProfile = {
+    principal : Principal.Principal;
+    createdAt : Int;
+    tier : {
+      #free;
+      #pro;
     };
   };
 
+  public type SecurityQuestion = {
+    question : Text;
+    answer : Text;
+  };
+
+  public type NewActor = {
+    userProfiles : Map.Map<Principal.Principal, NewUserProfile>;
+    userSecurityQuestions : Map.Map<Principal.Principal, List.List<SecurityQuestion>>;
+  };
+
   public func run(old : OldActor) : NewActor {
-    { old with stripeConfiguration = null };
+    {
+      userProfiles = old.userProfiles;
+      userSecurityQuestions = Map.empty<Principal.Principal, List.List<SecurityQuestion>>();
+    };
   };
 };

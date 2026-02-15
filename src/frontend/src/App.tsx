@@ -7,6 +7,8 @@ import CameraPage from './pages/CameraPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
 import TermsPage from './pages/TermsPage';
+import SecurityQuestionsSetupPage from './pages/SecurityQuestionsSetupPage';
+import AccountRecoveryPage from './pages/AccountRecoveryPage';
 import AppLayout from './components/layout/AppLayout';
 
 // Root route with layout
@@ -26,6 +28,32 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: LoginPage,
+});
+
+// Security questions setup route (authenticated)
+const securityQuestionsSetupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/security-questions-setup',
+  component: SecurityQuestionsSetupPage,
+  beforeLoad: ({ context }) => {
+    const { isAuthenticated } = context as { isAuthenticated: boolean };
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+  },
+});
+
+// Account recovery route (authenticated)
+const accountRecoveryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/account-recovery',
+  component: AccountRecoveryPage,
+  beforeLoad: ({ context }) => {
+    const { isAuthenticated } = context as { isAuthenticated: boolean };
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+  },
 });
 
 // Dashboard route with protection
@@ -78,6 +106,8 @@ const termsRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
+  securityQuestionsSetupRoute,
+  accountRecoveryRoute,
   dashboardRoute,
   cameraRoute,
   paymentSuccessRoute,

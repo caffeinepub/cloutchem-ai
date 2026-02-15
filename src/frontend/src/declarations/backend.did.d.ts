@@ -11,6 +11,7 @@ import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
 export type Principal = Principal;
+export interface SecurityQuestion { 'question' : string, 'answer' : string }
 export interface ShoppingItem {
   'productName' : string,
   'currency' : string,
@@ -63,12 +64,19 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'hasSecurityQuestions' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
+  'resetSecurityQuestions' : ActorMethod<
+    [Array<SecurityQuestion>, Array<SecurityQuestion>],
+    undefined
+  >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setSecurityQuestions' : ActorMethod<[Array<SecurityQuestion>], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateUserTier' : ActorMethod<[Principal, SubscriptionTier], undefined>,
+  'verifySecurityQuestions' : ActorMethod<[Array<SecurityQuestion>], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

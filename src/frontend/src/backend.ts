@@ -98,6 +98,10 @@ export interface http_request_result {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export interface SecurityQuestion {
+    question: string;
+    answer: string;
+}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
@@ -154,12 +158,16 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    hasSecurityQuestions(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
+    resetSecurityQuestions(questions: Array<SecurityQuestion>, answers: Array<SecurityQuestion>): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setSecurityQuestions(questions: Array<SecurityQuestion>): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateUserTier(user: Principal, tier: SubscriptionTier): Promise<void>;
+    verifySecurityQuestions(answers: Array<SecurityQuestion>): Promise<boolean>;
 }
 import type { Principal as _Principal, StripeSessionStatus as _StripeSessionStatus, SubscriptionTier as _SubscriptionTier, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -276,6 +284,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
         }
     }
+    async hasSecurityQuestions(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.hasSecurityQuestions();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.hasSecurityQuestions();
+            return result;
+        }
+    }
     async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -304,6 +326,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async resetSecurityQuestions(arg0: Array<SecurityQuestion>, arg1: Array<SecurityQuestion>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.resetSecurityQuestions(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.resetSecurityQuestions(arg0, arg1);
+            return result;
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -315,6 +351,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n15(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async setSecurityQuestions(arg0: Array<SecurityQuestion>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setSecurityQuestions(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setSecurityQuestions(arg0);
             return result;
         }
     }
@@ -357,6 +407,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateUserTier(arg0, to_candid_SubscriptionTier_n17(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async verifySecurityQuestions(arg0: Array<SecurityQuestion>): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.verifySecurityQuestions(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.verifySecurityQuestions(arg0);
             return result;
         }
     }

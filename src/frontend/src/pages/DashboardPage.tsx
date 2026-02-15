@@ -1,10 +1,13 @@
+import { useEffect } from 'react';
+import { useNavigate, Link } from '@tanstack/react-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useGetCallerUserProfile, useRefreshUserProfile } from '../hooks/useQueries';
+import { useHasSecurityQuestions } from '../hooks/useSecurityQuestions';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { Sparkles, User, Calendar, AlertCircle, Rocket, RefreshCw } from 'lucide-react';
+import { Sparkles, User, Calendar, AlertCircle, Rocket, RefreshCw, Shield } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import AICaptionGenerator from '../components/ai/AICaptionGenerator';
 import UpgradeToProCard from '../components/billing/UpgradeToProCard';
@@ -12,18 +15,27 @@ import StripeCheckoutConfigPanel from '../components/billing/StripeCheckoutConfi
 import { getTierLabel } from '../utils/subscriptionTier';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const { identity } = useInternetIdentity();
   const { data: userProfile, isLoading, error, isFetched } = useGetCallerUserProfile();
+  const { data: hasQuestions, isLoading: checkingQuestions } = useHasSecurityQuestions();
   const { refetch: refreshProfile, isFetching: isRefreshing } = useRefreshUserProfile();
 
   const principalId = identity?.getPrincipal().toString() || '';
   const shortPrincipal = principalId ? `${principalId.slice(0, 8)}...${principalId.slice(-6)}` : '';
 
+  // Redirect to security questions setup if not completed
+  useEffect(() => {
+    if (!checkingQuestions && hasQuestions === false) {
+      navigate({ to: '/security-questions-setup' });
+    }
+  }, [hasQuestions, checkingQuestions, navigate]);
+
   const handleRefreshStatus = async () => {
     await refreshProfile();
   };
 
-  if (isLoading) {
+  if (isLoading || checkingQuestions) {
     return (
       <div className="container mx-auto px-6 py-12 max-w-6xl">
         <div className="space-y-8">
@@ -124,6 +136,13 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium">{createdDate}</p>
                 </div>
               )}
+              <Separator className="opacity-20" />
+              <Link to="/account-recovery">
+                <Button variant="outline" className="w-full gap-2 border-accent/30 hover:bg-accent/10">
+                  <Shield className="w-4 h-4" />
+                  Account Recovery
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 

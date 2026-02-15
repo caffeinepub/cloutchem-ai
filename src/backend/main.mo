@@ -4,12 +4,15 @@ import Time "mo:core/Time";
 import Principal "mo:core/Principal";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
+import List "mo:core/List";
+import Migration "migration";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import Stripe "stripe/stripe";
 import OutCall "http-outcalls/outcall";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -25,7 +28,13 @@ actor {
     tier : SubscriptionTier;
   };
 
+  public type SecurityQuestion = {
+    question : Text;
+    answer : Text;
+  };
+
   let userProfiles = Map.empty<Principal.Principal, UserProfile>();
+  let userSecurityQuestions = Map.empty<Principal.Principal, List.List<SecurityQuestion>>();
 
   var stripeConfiguration : ?Stripe.StripeConfiguration = null;
 
@@ -81,26 +90,14 @@ actor {
   };
 
   public shared ({ caller }) func getCallerUserProfile() : async UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
     ensureUserProfile(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal.Principal) : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
-    };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
     if (profile.principal != caller) {
       Runtime.trap("Unauthorized: Can only save your own profile");
     };
@@ -133,9 +130,76 @@ actor {
   };
 
   public query ({ caller }) func getAllUserProfiles() : async [UserProfile] {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Admin privileges required");
-    };
     userProfiles.values().toArray();
+  };
+
+  // Security questions
+  public shared ({ caller }) func setSecurityQuestions(questions : [SecurityQuestion]) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can set security questions");
+    };
+    if (userSecurityQuestions.containsKey(caller)) {
+      Runtime.trap("Security questions already set. Use resetSecurityQuestions to change them.");
+    };
+    if (questions.size() != 2) {
+      Runtime.trap("Exactly two security questions must be provided");
+    };
+    let securityList = List.fromArray<SecurityQuestion>(questions);
+    userSecurityQuestions.add(caller, securityList);
+  };
+
+  public query ({ caller }) func hasSecurityQuestions() : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check security question status");
+    };
+    userSecurityQuestions.containsKey(caller);
+  };
+
+  public shared ({ caller }) func verifySecurityQuestions(answers : [SecurityQuestion]) : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can verify security questions");
+    };
+    switch (userSecurityQuestions.get(caller)) {
+      case (?storedQuestions) {
+        let storedArray = storedQuestions.toArray();
+        let correctAnswers = switch (storedQuestions.size(), answers.size()) {
+          case (2, 2) {
+            storedArray[0].answer == answers[0].answer and storedArray[1].answer == answers[1].answer
+          };
+          case _ { false };
+        };
+        if (not correctAnswers) {
+          Runtime.trap("Security question verification failed");
+        };
+        true;
+      };
+      case (null) {
+        Runtime.trap("User has not completed security question setup");
+      };
+    };
+  };
+
+  public shared ({ caller }) func resetSecurityQuestions(questions : [SecurityQuestion], answers : [SecurityQuestion]) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can reset security questions");
+    };
+    if (questions.size() != 2) {
+      Runtime.trap("Exactly two new security questions must be provided");
+    };
+    let storedQuestions = switch (userSecurityQuestions.get(caller)) {
+      case (?q) { q };
+      case (null) {
+        Runtime.trap("No existing security questions found for the user");
+      };
+    };
+    let storedArray = storedQuestions.toArray();
+    if (
+      storedArray[0].answer == answers[0].answer and storedArray[1].answer == answers[1].answer
+    ) {
+      let securityList = List.fromArray<SecurityQuestion>(questions);
+      userSecurityQuestions.add(caller, securityList);
+    } else {
+      Runtime.trap("Security question verification failed");
+    };
   };
 };

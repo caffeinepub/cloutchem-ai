@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2, LogOut, LayoutDashboard, Video } from 'lucide-react';
+import { Loader2, LogOut, LayoutDashboard, Video, Shield } from 'lucide-react';
 
 export default function Header() {
   const { identity, clear, loginStatus } = useInternetIdentity();
@@ -44,6 +44,12 @@ export default function Header() {
                 <Button variant="ghost" className="gap-2">
                   <Video className="w-4 h-4" />
                   Camera
+                </Button>
+              </Link>
+              <Link to="/account-recovery">
+                <Button variant="ghost" className="gap-2">
+                  <Shield className="w-4 h-4" />
+                  Recovery
                 </Button>
               </Link>
               <Button

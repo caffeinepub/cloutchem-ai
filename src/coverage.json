@@ -1,81 +1,98 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T23:18:41.727Z",
+  "generatedAt": "2026-02-15T23:33:46.517Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 5,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/components/layout/Header.tsx",
-          "frontend/src/pages/TermsPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/TermsPage.tsx"
-        ]
+        "summary": "Extend the backend user account data to support user-defined security questions that are set up on first sign-in: store at least two question/answer pairs per principal and expose whether the caller has completed security-question setup.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/LoginPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
-        ]
+        "summary": "Add backend endpoints to (a) set initial security questions for the authenticated caller and (b) verify answers for the authenticated caller, enabling a recovery flow that allows the caller to reset/change their security questions after successful verification.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-3",
-        "summary": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
+        "summary": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/hooks/useSecurityQuestions.ts",
+          "frontend/src/components/security/SecurityQuestionsForm.tsx",
+          "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/App.tsx",
           "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/layout/Header.tsx"
+          "frontend/src/pages/CameraPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useSecurityQuestions.ts",
+          "frontend/src/components/security/SecurityQuestionsForm.tsx",
+          "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/pages/CameraPage.tsx"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
+        "summary": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/index.html",
-          "frontend/src/pages/TermsPage.tsx",
-          "frontend/src/pages/LandingPage.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
+          "frontend/src/hooks/useSecurityQuestions.ts",
+          "frontend/src/pages/AccountRecoveryPage.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/Header.tsx"
         ],
         "matchedFiles": [
-          "frontend/index.html",
-          "frontend/src/pages/TermsPage.tsx"
+          "frontend/src/hooks/useSecurityQuestions.ts",
+          "frontend/src/pages/AccountRecoveryPage.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/Header.tsx"
         ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "If adding new persistent backend state to support security questions changes stable data structures, add/adjust backend upgrade migration logic according to the project’s conditional migration policy so upgrades do not trap or lose existing user profiles.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/layout/Header.tsx",
+    "frontend/src/components/security/SecurityQuestionsForm.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useSecurityQuestions.ts",
+    "frontend/src/pages/AccountRecoveryPage.tsx",
+    "frontend/src/pages/CameraPage.tsx",
+    "frontend/src/pages/DashboardPage.tsx",
     "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/pages/TermsPage.tsx",
+    "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

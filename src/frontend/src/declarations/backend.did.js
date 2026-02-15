@@ -37,6 +37,10 @@ export const StripeSessionStatus = IDL.Variant({
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
 });
+export const SecurityQuestion = IDL.Record({
+  'question' : IDL.Text,
+  'answer' : IDL.Text,
+});
 export const StripeConfiguration = IDL.Record({
   'allowedCountries' : IDL.Vec(IDL.Text),
   'secretKey' : IDL.Text,
@@ -73,9 +77,16 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
   'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
+  'hasSecurityQuestions' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+  'resetSecurityQuestions' : IDL.Func(
+      [IDL.Vec(SecurityQuestion), IDL.Vec(SecurityQuestion)],
+      [],
+      [],
+    ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'setSecurityQuestions' : IDL.Func([IDL.Vec(SecurityQuestion)], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
@@ -83,6 +94,11 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'updateUserTier' : IDL.Func([Principal, SubscriptionTier], [], []),
+  'verifySecurityQuestions' : IDL.Func(
+      [IDL.Vec(SecurityQuestion)],
+      [IDL.Bool],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -113,6 +129,10 @@ export const idlFactory = ({ IDL }) => {
       'response' : IDL.Text,
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
+  });
+  const SecurityQuestion = IDL.Record({
+    'question' : IDL.Text,
+    'answer' : IDL.Text,
   });
   const StripeConfiguration = IDL.Record({
     'allowedCountries' : IDL.Vec(IDL.Text),
@@ -147,9 +167,16 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
     'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
+    'hasSecurityQuestions' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+    'resetSecurityQuestions' : IDL.Func(
+        [IDL.Vec(SecurityQuestion), IDL.Vec(SecurityQuestion)],
+        [],
+        [],
+      ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'setSecurityQuestions' : IDL.Func([IDL.Vec(SecurityQuestion)], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'transform' : IDL.Func(
         [TransformationInput],
@@ -157,6 +184,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'updateUserTier' : IDL.Func([Principal, SubscriptionTier], [], []),
+    'verifySecurityQuestions' : IDL.Func(
+        [IDL.Vec(SecurityQuestion)],
+        [IDL.Bool],
+        [],
+      ),
   });
 };
 

@@ -1,106 +1,84 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "CloudCam AI Internet Identity-only auth flow, protected routes, profile bootstrapping, and branding fixes",
+  "title": "Add security questions setup + in-app account recovery (authenticated)",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Ensure Internet Identity is the only sign-up/login method and all UI copy reflects passwordless Internet Identity authentication (no username/password UI).",
+      "id": "REQ-3",
+      "summary": "Gate initial post-login onboarding on completing a 2+ security questions setup step, then allow access to dashboard/camera as normal.",
       "acceptanceCriteria": [
-        "There is no username/password registration or login API added to the backend canister.",
-        "All user-facing authentication text refers to Internet Identity (passwordless) and does not mention creating a CloudCam AI password."
+        "After Internet Identity login, the app checks backend security-question setup status.",
+        "If not set up, the user is routed to or shown a dedicated setup UI that requires at least two Q/A entries and validates required fields.",
+        "On successful save, the user can proceed to the dashboard and protected routes as normal.",
+        "All user-facing text is in English and does not imply CloudCam AI can reset an Internet Identity password."
       ],
       "file_operations": [
+        {
+          "path": "frontend/src/hooks/useSecurityQuestions.ts",
+          "operation": "create",
+          "description": "Create React Query hooks to: (1) query security-question setup status via backend (hasSecurityQuestions), and (2) save initial security questions via backend (setSecurityQuestions). Include consistent handling of authorization failures surfaced from the authorization system. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/security/SecurityQuestionsForm.tsx",
+          "operation": "create",
+          "description": "Create a reusable form component for collecting custom security questions and answers (minimum 2), with client-side validation and UX for adding/removing entries. Compose shadcn/ui primitives (do not modify components under frontend/src/components/ui). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
+          "operation": "create",
+          "description": "Add a dedicated “Security Questions Setup” page shown to authenticated users who have not completed setup. Use the SecurityQuestionsForm component and the save hook to persist. Copy must be English and explicitly scoped to in-app recovery/security questions (must not claim to reset Internet Identity passwords). Verify the component's usage instructions before implementing."
+        },
         {
           "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Audit and update authentication-related copy to consistently describe Internet Identity as the only (passwordless) sign-in method; ensure no strings imply a CloudCam AI password or custom credentials. Verify the component's usage instructions before implementing."
+          "description": "Update post-auth navigation: after successful Internet Identity login, query backend setup status (hasSecurityQuestions) and route the user to /security-questions-setup when not set up; otherwise route to /dashboard. Keep flow within Internet Identity (no username/password). Verify the component's usage instructions before implementing."
         },
-        {
-          "path": "frontend/src/components/layout/Header.tsx",
-          "operation": "modify",
-          "description": "Update header auth CTA labels/copy (e.g., logged-out 'Sign In') to explicitly reference Internet Identity and avoid any password/username implication. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/TermsPage.tsx",
-          "operation": "modify",
-          "description": "Update account/authentication terms copy so it references CloudCam AI + Internet Identity login (passwordless) where applicable and does not suggest CloudCam AI password accounts. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Make the /login route the entry point for authentication and enforce redirects to /login for unauthenticated access to protected routes (/dashboard and /camera), with post-login redirect to /dashboard.",
-      "acceptanceCriteria": [
-        "When not authenticated, navigating to /dashboard redirects to /login.",
-        "When not authenticated, navigating to /camera redirects to /login.",
-        "After successful Internet Identity login, the user is redirected to /dashboard."
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Verify and harden route protection for /dashboard and /camera using router guards, ensuring unauthenticated navigation reliably redirects to /login (including direct URL entry/refresh). Keep the existing Internet Identity-based auth context approach. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Confirm post-login navigation always routes authenticated users to /dashboard (and does not leave users on /login). Ensure errors are handled without breaking redirect behavior. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "On first authenticated use, trigger backend profile auto-creation via the existing getCallerUserProfile flow and consistently load the persisted profile for the principal on subsequent visits/reloads.",
-      "acceptanceCriteria": [
-        "After logging in with Internet Identity and visiting the dashboard, a caller profile exists in the backend (auto-created if missing).",
-        "Refreshing the dashboard continues to load the same persisted profile data for that principal (createdAt remains stable across reloads)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Adjust the current-user profile query to align with the authorization component’s frontend guidance: only run getCallerUserProfile when the actor is ready and the user is authenticated; keep a stable query key and ensure loading state prevents UI flash. Verify the component's usage instructions before implementing."
+          "description": "Register a new authenticated route for /security-questions-setup. Add route guarding so only authenticated users can access it. Also wire setup enforcement into protected app flow by redirecting authenticated users who have not completed setup away from /dashboard and /camera to /security-questions-setup (implemented via page-level checks or route-level loaders without touching forbidden auth hooks). Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/DashboardPage.tsx",
           "operation": "modify",
-          "description": "Ensure the dashboard reliably triggers the caller profile load (which auto-creates if missing) and renders sensible states for loading/authorization errors, while continuing to display persisted profile fields across refreshes. Verify the component's usage instructions before implementing."
+          "description": "Enforce setup gating: if authenticated but security questions are not set up, redirect to /security-questions-setup instead of rendering dashboard content. Add a visible in-app link/button to “Account recovery / Security questions” (navigates to /account-recovery). Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/Header.tsx",
+          "path": "frontend/src/pages/CameraPage.tsx",
           "operation": "modify",
-          "description": "Confirm logout clears cached application data (including the cached user profile) per the authorization component guidance (retain/ensure queryClient.clear + navigation behavior). Verify the component's usage instructions before implementing."
+          "description": "Enforce setup gating: if authenticated but security questions are not set up, redirect to /security-questions-setup before allowing access to the camera experience. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Update UI branding to consistently use “CloudCam AI” everywhere, including the HTML document title.",
+      "summary": "Provide an authenticated Account Recovery page that verifies security-question answers and, if successful, allows resetting/changing security questions (2+).",
       "acceptanceCriteria": [
-        "The browser tab title uses “CloudCam AI” (not “CloutChem AI”).",
-        "No visible UI strings show the old product name."
+        "There is a UI route/page accessible to authenticated users where they can answer their security questions.",
+        "If verification succeeds, the UI allows the user to set new security questions (minimum 2) and saves them via the backend.",
+        "If verification fails, the UI shows a clear error state without leaking which answers were incorrect.",
+        "No email, SMS, or external messaging is used anywhere in the flow."
       ],
       "file_operations": [
         {
-          "path": "frontend/index.html",
+          "path": "frontend/src/hooks/useSecurityQuestions.ts",
           "operation": "modify",
-          "description": "Update the HTML document title to “CloudCam AI” to fix the browser tab title branding. Verify the component's usage instructions before implementing."
+          "description": "Extend hooks to support verifying answers (verifySecurityQuestions) and resetting/replacing questions after success (resetSecurityQuestions). Ensure the verify result only yields success/failure UI states, and handle authorization errors consistently (per authorization component guidance). Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/TermsPage.tsx",
-          "operation": "modify",
-          "description": "Replace remaining visible occurrences of the old product name with “CloudCam AI” throughout the Terms UI text. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/pages/AccountRecoveryPage.tsx",
+          "operation": "create",
+          "description": "Create an authenticated “Account Recovery” page at /account-recovery with two steps: (1) verify answers (generic failure message), then (2) allow setting new security questions (min 2) and saving them. Explicitly state this is in-app recovery and does not reset Internet Identity credentials. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/LandingPage.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Audit and update any remaining visible branding strings to “CloudCam AI” (ensure no old-name text is rendered in headings, descriptions, CTAs). Verify the component's usage instructions before implementing."
+          "description": "Wire /account-recovery into the router as an authenticated route. Ensure navigation to success/failure states stays on-page (no additional routes required) and no email/SMS flows are introduced. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/DashboardPage.tsx",
+          "path": "frontend/src/components/layout/Header.tsx",
           "operation": "modify",
-          "description": "Audit and update any remaining visible branding strings to “CloudCam AI” (ensure no old-name text is rendered). Verify the component's usage instructions before implementing."
+          "description": "Add an authenticated navigation entry to /account-recovery (e.g., “Account recovery”) so users can access the page easily. Compose existing shadcn/ui Button/Link components (do not modify UI primitives). Verify the component's usage instructions before implementing."
         }
       ]
     }

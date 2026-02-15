@@ -16,6 +16,10 @@ export interface http_request_result {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export interface SecurityQuestion {
+    question: string;
+    answer: string;
+}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
@@ -71,10 +75,14 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    hasSecurityQuestions(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
+    resetSecurityQuestions(questions: Array<SecurityQuestion>, answers: Array<SecurityQuestion>): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setSecurityQuestions(questions: Array<SecurityQuestion>): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateUserTier(user: Principal, tier: SubscriptionTier): Promise<void>;
+    verifySecurityQuestions(answers: Array<SecurityQuestion>): Promise<boolean>;
 }

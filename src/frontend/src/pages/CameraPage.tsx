@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { useCamera } from '../camera/useCamera';
 import { useVideoRecorder } from '../hooks/useVideoRecorder';
+import { useHasSecurityQuestions } from '../hooks/useSecurityQuestions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,6 +21,9 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 export default function CameraPage() {
+  const navigate = useNavigate();
+  const { data: hasQuestions, isLoading: checkingQuestions } = useHasSecurityQuestions();
+
   const {
     isActive: isCameraActive,
     isSupported,
@@ -52,6 +57,13 @@ export default function CameraPage() {
 
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
+
+  // Redirect to security questions setup if not completed
+  useEffect(() => {
+    if (!checkingQuestions && hasQuestions === false) {
+      navigate({ to: '/security-questions-setup' });
+    }
+  }, [hasQuestions, checkingQuestions, navigate]);
 
   // Recording duration timer
   useEffect(() => {
@@ -115,6 +127,17 @@ export default function CameraPage() {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Show loading while checking security questions
+  if (checkingQuestions) {
+    return (
+      <div className="container mx-auto px-6 py-12 max-w-4xl">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+        </div>
+      </div>
+    );
+  }
 
   // Camera not supported
   if (isSupported === false) {
@@ -191,8 +214,8 @@ export default function CameraPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* Video Preview/Playback Container */}
-              <div className="relative w-full bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              {/* Video Preview or Playback */}
+              <div className="relative w-full bg-black rounded-lg overflow-hidden" style={{ minHeight: '400px' }}>
                 {!recordedUrl ? (
                   <>
                     <video
@@ -203,19 +226,11 @@ export default function CameraPage() {
                       className="w-full h-full object-cover"
                       style={{ minHeight: '400px' }}
                     />
-                    <canvas ref={canvasRef} className="hidden" />
-                    {!isCameraActive && !isCameraLoading && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-                        <div className="text-center space-y-4">
-                          <CameraIcon className="w-16 h-16 text-muted-foreground mx-auto" />
-                          <p className="text-muted-foreground">Camera is not active</p>
-                        </div>
-                      </div>
-                    )}
+                    <canvas ref={canvasRef} style={{ display: 'none' }} />
                     {isRecording && (
-                      <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 text-white px-3 py-1.5 rounded-full">
+                      <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full flex items-center gap-2 font-semibold">
                         <Circle className="w-3 h-3 fill-current animate-pulse" />
-                        <span className="font-mono text-sm">{formatDuration(recordingDuration)}</span>
+                        REC {formatDuration(recordingDuration)}
                       </div>
                     )}
                   </>
@@ -226,22 +241,21 @@ export default function CameraPage() {
 
               {/* Camera Controls */}
               {!recordedUrl && (
-                <div className="flex flex-wrap gap-3 justify-center">
+                <div className="flex flex-wrap gap-3">
                   {!isCameraActive ? (
                     <Button
                       onClick={startCamera}
                       disabled={isCameraLoading}
-                      size="lg"
-                      className="gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"
+                      className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold gap-2"
                     >
                       {isCameraLoading ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Starting Camera...
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Starting...
                         </>
                       ) : (
                         <>
-                          <Video className="w-5 h-5" />
+                          <Play className="w-4 h-4" />
                           Start Camera
                         </>
                       )}
@@ -252,61 +266,64 @@ export default function CameraPage() {
                         <>
                           <Button
                             onClick={handleStartRecording}
-                            disabled={isCameraLoading}
-                            size="lg"
-                            className="gap-2 bg-red-600 hover:bg-red-700"
+                            disabled={!isCameraActive}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold gap-2"
                           >
-                            <Circle className="w-5 h-5 fill-current" />
+                            <Circle className="w-4 h-4" />
                             Start Recording
                           </Button>
                           <Button
                             onClick={handleTakePhoto}
-                            disabled={isCameraLoading}
-                            size="lg"
+                            disabled={!isCameraActive}
                             variant="outline"
-                            className="gap-2"
+                            className="gap-2 border-accent/30 hover:bg-accent/10"
                           >
-                            <CameraIcon className="w-5 h-5" />
+                            <CameraIcon className="w-4 h-4" />
                             Take Photo
                           </Button>
                           <Button
                             onClick={handleSwitchCamera}
-                            disabled={isCameraLoading}
-                            size="lg"
+                            disabled={!isCameraActive || isCameraLoading}
                             variant="outline"
-                            className="gap-2"
+                            className="gap-2 border-accent/30 hover:bg-accent/10"
                           >
-                            <SwitchCamera className="w-5 h-5" />
-                            Switch
+                            <SwitchCamera className="w-4 h-4" />
                           </Button>
-                          <Button onClick={stopCamera} disabled={isCameraLoading} size="lg" variant="outline" className="gap-2">
-                            <Square className="w-5 h-5" />
+                          <Button
+                            onClick={stopCamera}
+                            disabled={!isCameraActive}
+                            variant="outline"
+                            className="gap-2 border-accent/30 hover:bg-accent/10"
+                          >
+                            <Square className="w-4 h-4" />
                             Stop Camera
                           </Button>
                         </>
                       ) : (
                         <>
                           {!isPaused ? (
-                            <Button onClick={pauseRecording} size="lg" variant="outline" className="gap-2">
-                              <Pause className="w-5 h-5" />
-                              Pause
+                            <Button
+                              onClick={pauseRecording}
+                              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-background font-semibold gap-2"
+                            >
+                              <Pause className="w-4 h-4" />
+                              Pause Recording
                             </Button>
                           ) : (
                             <Button
                               onClick={resumeRecording}
-                              size="lg"
-                              className="gap-2 bg-red-600 hover:bg-red-700"
+                              className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold gap-2"
                             >
-                              <Play className="w-5 h-5" />
-                              Resume
+                              <Play className="w-4 h-4" />
+                              Resume Recording
                             </Button>
                           )}
                           <Button
                             onClick={handleStopRecording}
-                            size="lg"
-                            className="gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"
+                            variant="destructive"
+                            className="gap-2"
                           >
-                            <Square className="w-5 h-5" />
+                            <Square className="w-4 h-4" />
                             Stop Recording
                           </Button>
                         </>
@@ -318,26 +335,21 @@ export default function CameraPage() {
 
               {/* Playback Controls */}
               {recordedUrl && (
-                <div className="flex flex-wrap gap-3 justify-center">
+                <div className="flex gap-3">
                   <Button
                     onClick={handleClearRecording}
-                    size="lg"
                     variant="outline"
-                    className="gap-2 border-destructive/30 hover:bg-destructive/10"
+                    className="flex-1 gap-2 border-accent/30 hover:bg-accent/10"
                   >
-                    <Trash2 className="w-5 h-5" />
-                    Delete Recording
+                    <Trash2 className="w-4 h-4" />
+                    Clear Recording
                   </Button>
                   <Button
-                    onClick={() => {
-                      handleClearRecording();
-                      startCamera();
-                    }}
-                    size="lg"
-                    className="gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"
+                    onClick={startCamera}
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold gap-2"
                   >
-                    <Video className="w-5 h-5" />
-                    Record New Video
+                    <Video className="w-4 h-4" />
+                    Record Again
                   </Button>
                 </div>
               )}
@@ -360,16 +372,14 @@ export default function CameraPage() {
                 <div className="relative w-full bg-black rounded-lg overflow-hidden">
                   <img src={capturedPhoto} alt="Captured" className="w-full h-auto" />
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button
-                    onClick={handleClearPhoto}
-                    variant="outline"
-                    className="gap-2 border-destructive/30 hover:bg-destructive/10"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                    Delete Photo
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleClearPhoto}
+                  variant="outline"
+                  className="w-full gap-2 border-accent/30 hover:bg-accent/10"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear Photo
+                </Button>
               </div>
             </CardContent>
           </Card>

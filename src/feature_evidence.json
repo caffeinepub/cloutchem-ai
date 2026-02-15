@@ -2,55 +2,16 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-do-not-implement-a-custom-backend-username-password-authentication-system-keep-internet-identity-as-the-only-sign-up-login-method-and-ensure-the-ui-copy-consistently-describes-internet-identity-as-the-authentication-mechanism",
-      "featureTitle": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
+      "featureId": "feature-add-a-frontend-security-questions-setup-step-that-occurs-during-initial-onboarding-interpreted-as-the-user-s-first-successful-internet-identity-sign-in-if-the-authenticated-user-has-not-set-security-questions-yet-prompt-them-to-create-at-least-two-custom-questions-and-answers-before-continuing-to-the-dashboard-camera-experience",
+      "featureTitle": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
       "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/security/SecurityQuestionsForm.tsx",
+        "frontend/src/hooks/useSecurityQuestions.ts",
+        "frontend/src/pages/CameraPage.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
         "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/pages/TermsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route-and-that-unauthenticated-users-are-redirected-to-login-when-attempting-to-access-protected-routes-at-minimum-dashboard-and-camera",
-      "featureTitle": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
-      "files": [
-        "frontend/src/pages/LoginPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-using-the-existing-backend-profile-record-principal-createdat-tier-and-the-existing-getcalleruserprofile-flow",
-      "featureTitle": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
-      "files": [
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/pages/SecurityQuestionsSetupPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -69,11 +30,13 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-including-fixing-the-html-document-title-currently-using-the-old-name",
-      "featureTitle": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
+      "featureId": "feature-add-a-frontend-account-recovery-page-for-authenticated-users-that-verifies-their-security-question-answers-and-upon-success-allows-them-to-reset-change-their-security-questions-no-email-flow",
+      "featureTitle": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
       "files": [
-        "frontend/index.html",
-        "frontend/src/pages/TermsPage.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/Header.tsx",
+        "frontend/src/hooks/useSecurityQuestions.ts",
+        "frontend/src/pages/AccountRecoveryPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",

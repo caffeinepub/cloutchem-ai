@@ -1,46 +1,27 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "CloudCam AI: build a login-gated social media app with custom backend username/password accounts, user profiles (username + profile picture), and public/private media posts stored permanently in the backend, including feed, friends, likes, and comments; subscription gating for profile customization and feed access.",
+  "summary": "Project includes account password-reset functionality implemented via user-defined security questions (set during signup), with email disabled.",
   "architectural_notes": [
-    "Use backend canister as the system of record for users, profiles, and media storage (permanent).",
-    "Username validation: 3–20 chars; [A-Za-z0-9_.]; unique; change allowed once every 30 days; offensive word filtering.",
-    "Media constraints: images JPG/PNG/GIF <=10MB; videos MP4/MOV <=50MB; optional max length 2–3 minutes; soft cap 100 media items/user with near-limit notifications.",
-    "Per-post visibility model: public by default with optional private toggle.",
-    "Access control: fully gated behind login; subscription required for profile customization and feed access."
+    "Email is disabled; password reset must not rely on email delivery.",
+    "Security questions are user-defined and must be configured during signup; password reset requires answering 2+ questions."
   ],
   "known_issues": [
-    "Previous build attempt failed with 'AI was unable to implement your request'; may need retry/simplification if build continues failing."
+    "Build/deployment attempt failed with error: 'AI couldn't implement that request'; user requested a retry."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-do-not-implement-a-custom-backend-username-password-authentication-system-keep-internet-identity-as-the-only-sign-up-login-method-and-ensure-the-ui-copy-consistently-describes-internet-identity-as-the-authentication-mechanism",
-      "title": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route-and-that-unauthenticated-users-are-redirected-to-login-when-attempting-to-access-protected-routes-at-minimum-dashboard-and-camera",
-      "title": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-using-the-existing-backend-profile-record-principal-createdat-tier-and-the-existing-getcalleruserprofile-flow",
-      "title": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
+      "id": "feature-add-a-frontend-security-questions-setup-step-that-occurs-during-initial-onboarding-interpreted-as-the-user-s-first-successful-internet-identity-sign-in-if-the-authenticated-user-has-not-set-security-questions-yet-prompt-them-to-create-at-least-two-custom-questions-and-answers-before-continuing-to-the-dashboard-camera-experience",
+      "title": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-including-fixing-the-html-document-title-currently-using-the-old-name",
-      "title": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
+      "id": "feature-add-a-frontend-account-recovery-page-for-authenticated-users-that-verifies-their-security-question-answers-and-upon-success-allows-them-to-reset-change-their-security-questions-no-email-flow",
+      "title": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
       "reqIds": [
         "REQ-4"
       ],
@@ -50,55 +31,36 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Implement custom backend username/password user account system (sign up, login)",
+      "summary": "Add password reset flow using security questions (user-defined; require 2+; set up during signup; no email)",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Add user profile feature with unique username and editable profile picture (bio optional later)",
-      "reqIds": [],
+      "summary": "Extend the backend user account data to support user-defined security questions that are set up on first sign-in: store at least two question/answer pairs per principal and expose whether the caller has completed security-question setup.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Add username editing restrictions (3–20 chars; letters/numbers/_/.; unique; 30-day change cooldown; offensive word block)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Enable media uploads to user profile (images/videos) with per-post public default and optional private toggle",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Store uploaded media permanently in backend storage with limits (100 items/user; image 10MB; video 50MB; optional 2–3 min length; notify near limit; future subscriber higher limits)",
-      "reqIds": [],
+      "summary": "Add backend endpoints to (a) set initial security questions for the authenticated caller and (b) verify answers for the authenticated caller, enabling a recovery flow that allows the caller to reset/change their security questions after successful verification.",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Build a feed showing own posts and friends/other users' posts; support likes and comments",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add friend system (add friends; view friends’ posts)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Gate access behind login; require subscription to customize profile and access feed",
-      "reqIds": [],
+      "summary": "If adding new persistent backend state to support security questions changes stable data structures, add/adjust backend upgrade migration logic according to the project’s conditional migration policy so upgrades do not trap or lose existing user profiles.",
+      "reqIds": [
+        "REQ-5"
+      ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "CloudCam AI",
+  "projectName": "Add account recovery via user-defined security questions (2+ required)",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

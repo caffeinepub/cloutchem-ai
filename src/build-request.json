@@ -1,91 +1,114 @@
 {
   "kind": "build_request",
-  "title": "Implement sign-up/login using Internet Identity (not custom username/password) and finalize CloudCam AI login-gated account creation flow",
+  "title": "Add account recovery via user-defined security questions (2+ required)",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Do not implement a custom backend username/password authentication system; keep Internet Identity as the only sign-up/login method and ensure the UI copy consistently describes Internet Identity as the authentication mechanism.",
-      "target": "both",
+      "text": "Extend the backend user account data to support user-defined security questions that are set up on first sign-in: store at least two question/answer pairs per principal and expose whether the caller has completed security-question setup.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Add a user account system to CloudCam AI so users can sign up and log in.",
-          "yes and built into backend",
-          "yes plz"
+          "we could do security questions",
+          "choose there own and 2 ore more required they should be set up during sign up"
         ]
       },
       "acceptanceCriteria": [
-        "There is no username/password registration or login API added to the backend canister.",
-        "All user-facing authentication text refers to Internet Identity (passwordless) and does not mention creating a CloudCam AI password."
+        "Backend persists a per-principal security-question configuration separate from (or in addition to) the existing UserProfile record.",
+        "Caller can query a boolean status indicating whether they have completed security-question setup.",
+        "Backend enforces a minimum of 2 security questions when saving setup.",
+        "Answer data is not stored in plaintext (store a non-reversible representation such as a salted hash)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure the app provides a clear, working login flow via the existing /login route, and that unauthenticated users are redirected to /login when attempting to access protected routes (at minimum: /dashboard and /camera).",
-      "target": "frontend",
+      "text": "Add backend endpoints to (a) set initial security questions for the authenticated caller and (b) verify answers for the authenticated caller, enabling a recovery flow that allows the caller to reset/change their security questions after successful verification.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "build now"
+          "Add password reset flow using security questions (user-defined; require 2+; set up during signup; no email)"
         ]
       },
       "acceptanceCriteria": [
-        "When not authenticated, navigating to /dashboard redirects to /login.",
-        "When not authenticated, navigating to /camera redirects to /login.",
-        "After successful Internet Identity login, the user is redirected to /dashboard."
+        "There is a backend method to set/replace the caller’s security questions, rejecting inputs with fewer than 2 questions.",
+        "There is a backend method to verify the caller’s submitted answers against the stored answers and return success/failure without revealing stored answers.",
+        "Unauthorized callers (not authenticated / lacking required permission) are rejected consistently with existing access-control patterns."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, using the existing backend profile record (principal, createdAt, tier) and the existing getCallerUserProfile flow.",
-      "target": "both",
+      "text": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "build now"
+          "they should be set up during sign up"
         ]
       },
       "acceptanceCriteria": [
-        "After logging in with Internet Identity and visiting the dashboard, a caller profile exists in the backend (auto-created if missing).",
-        "Refreshing the dashboard continues to load the same persisted profile data for that principal (createdAt remains stable across reloads)."
+        "After Internet Identity login, the app checks backend security-question setup status.",
+        "If not set up, the user is routed to or shown a dedicated setup UI that requires at least two Q/A entries and validates required fields.",
+        "On successful save, the user can proceed to the dashboard and protected routes as normal.",
+        "All user-facing text is in English and does not imply CloudCam AI can reset an Internet Identity password."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), including fixing the HTML document title currently using the old name.",
+      "text": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "build now"
+          "we can add password‑reset support next",
+          "we could do security questions"
         ]
       },
       "acceptanceCriteria": [
-        "The browser tab title uses “CloudCam AI” (not “CloutChem AI”).",
-        "No visible UI strings show the old product name."
+        "There is a UI route/page accessible to authenticated users where they can answer their security questions.",
+        "If verification succeeds, the UI allows the user to set new security questions (minimum 2) and saves them via the backend.",
+        "If verification fails, the UI shows a clear error state without leaking which answers were incorrect.",
+        "No email, SMS, or external messaging is used anywhere in the flow."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "If adding new persistent backend state to support security questions changes stable data structures, add/adjust backend upgrade migration logic according to the project’s conditional migration policy so upgrades do not trap or lose existing user profiles.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "ready u can build",
+          "yes plz"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Upgrading the canister preserves existing userProfiles data.",
+        "New security-question state initializes safely for existing users (treated as “not set up”).",
+        "No migration file is added unless it is necessary for an upgrade-safe schema/state change."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if persistent state schema changes.",
-    "Do not edit any files under frontend/src/components/ui or other paths listed as immutable: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
-    "Custom username/password authentication is not supported on this platform; authentication must use Internet Identity."
+    "Do not implement a custom username/password authentication system; Internet Identity remains the only sign-in mechanism.",
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything inside frontend/src/components/ui (compose these components instead).",
+    "Do not add any email-based password reset or outbound email integration."
   ],
   "nonGoals": [
-    "Implementing username/profile-picture profiles, username uniqueness/cooldowns/offensive-word filtering.",
-    "Implementing media uploads (images/videos), public/private post visibility, feed, friends, likes, or comments.",
-    "Adding subscriber-based gating beyond what already exists."
+    "Resetting or recovering an Internet Identity account/password (outside the app’s control).",
+    "Unauthenticated account recovery (since the app relies on Internet Identity authentication).",
+    "Adding real-time messaging, SMS, push notifications, or third-party auth providers."
   ],
   "imageRequirements": {
     "required": [],
