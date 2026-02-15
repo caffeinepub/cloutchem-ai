@@ -1,0 +1,95 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T20:46:43.714Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-13",
+        "summary": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/config/stripeCheckoutConfig.ts",
+          "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+          "frontend/src/pages/DashboardPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/config/stripeCheckoutConfig.ts",
+          "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+          "frontend/src/pages/DashboardPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/billing/UpgradeToProCard.tsx",
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/utils/subscriptionTier.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/billing/UpgradeToProCard.tsx",
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/utils/subscriptionTier.ts"
+        ]
+      },
+      {
+        "id": "REQ-15",
+        "summary": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/PaymentSuccessPage.tsx",
+          "frontend/src/pages/PaymentCancelPage.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/PaymentSuccessPage.tsx",
+          "frontend/src/pages/PaymentCancelPage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-16",
+        "summary": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/http-outcalls/outcall.mo",
+    "backend/stripe/stripe.mo",
+    "build-request.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+    "frontend/src/components/billing/UpgradeToProCard.tsx",
+    "frontend/src/config/stripeCheckoutConfig.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/PaymentCancelPage.tsx",
+    "frontend/src/pages/PaymentSuccessPage.tsx",
+    "frontend/src/utils/subscriptionTier.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

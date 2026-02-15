@@ -1,0 +1,47 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T20:46:43.711Z",
+  "summary": "Most Stripe frontend requirements (config surface, upgrade CTA behavior, and success/cancel return routes) appear implemented. The “Refresh subscription status” control exists, but the diff introduces a separate profile-refresh query hook with duplicated fetch logic rather than clearly reusing the existing profile query’s refetch/invalidation pattern.",
+  "missing_requirements": [
+    {
+      "id": "REQ-16",
+      "requirement": "Use the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic) for the manual “Refresh subscription status” action.",
+      "reason": "The diff adds a new hook (useRefreshUserProfile) with its own queryFn that re-fetches the profile, rather than reusing the existing useGetCallerUserProfile query instance’s refetch or queryClient.invalidateQueries-driven refetch pattern. This appears to duplicate profile-fetch logic.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/DashboardPage.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Automatically create a user profile when getCallerUserProfile returns null (auto-provisioning behavior).",
+      "reason": "Not requested by any requirement (REQ-13..REQ-16 are Stripe config/upgrade/return routes/refresh). This changes backend-fetch behavior by creating state on read.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Added subscription tier helper utilities beyond what’s required for Stripe upgrade/refresh flow (e.g., getFallbackTierLabel, isFree, isPro).",
+      "reason": "Not explicitly requested in REQ-13..REQ-16; may be useful internally but is not part of stated requirements.",
+      "evidence": [
+        "frontend/src/utils/subscriptionTier.ts"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+    "frontend/src/components/billing/UpgradeToProCard.tsx",
+    "frontend/src/config/stripeCheckoutConfig.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/PaymentCancelPage.tsx",
+    "frontend/src/pages/PaymentSuccessPage.tsx",
+    "frontend/src/utils/subscriptionTier.ts",
+    "project_state.json"
+  ]
+}

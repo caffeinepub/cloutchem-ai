@@ -1,0 +1,105 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Stripe-hosted checkout upgrade flow (Free → Pro)",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "summary": "Provide a single, editable frontend configuration surface for Stripe-hosted checkout URL plus optional success/cancel return URLs, with a clear error state when missing.",
+      "acceptanceCriteria": [
+        "A single configuration location exists for Stripe checkout routing (no hardcoded Stripe URLs spread across components).",
+        "When the Stripe checkout URL is not configured, the UI shows a clear, non-crashing error state explaining that payments are not configured."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/config/stripeCheckoutConfig.ts",
+          "operation": "create",
+          "description": "Create a single source of truth for Stripe checkout configuration (required checkout URL + optional success/cancel return URLs), including read/write helpers (e.g., localStorage-backed) and validation utilities to detect missing/invalid configuration."
+        },
+        {
+          "path": "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+          "operation": "create",
+          "description": "Add a configuration UI panel for editing the Stripe checkout configuration at runtime (without code changes), using existing shadcn/ui components for inputs, buttons, and alerts; include inline validation and an explicit error message when the required checkout URL is empty/invalid."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Wire the StripeCheckoutConfigPanel into the authenticated dashboard (e.g., a card/section), ensuring there is one clear place to update the Stripe checkout URL and that the dashboard can surface a non-crashing 'payments not configured' message when appropriate."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Update dashboard to show an Upgrade to Pro CTA for Free-tier users that redirects to the configured Stripe checkout URL, and a Pro state that hides the CTA.",
+      "acceptanceCriteria": [
+        "For a Free-tier profile, the dashboard displays an “Upgrade to Pro” button.",
+        "Clicking “Upgrade to Pro” takes the user to the configured Stripe checkout URL in the same tab.",
+        "For a Pro-tier profile, the upgrade button is not shown and the UI indicates the user is already on Pro."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/billing/UpgradeToProCard.tsx",
+          "operation": "create",
+          "description": "Create a dashboard card/section that (a) detects the current tier from the provided profile, (b) shows an “Upgrade to Pro” button only for Free tier, (c) redirects in the same tab via window.location.href to the configured Stripe-hosted checkout URL, and (d) shows a “You are on Pro” state (no upgrade CTA) when tier is Pro; when checkout config is missing, show a clear non-crashing error state instead of redirecting."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Add UpgradeToProCard to the dashboard and pass the current userProfile/tier; ensure the existing “Plan” display remains consistent and the upgrade CTA is hidden when tier is Pro."
+        },
+        {
+          "path": "frontend/src/utils/subscriptionTier.ts",
+          "operation": "modify",
+          "description": "Adjust/add small helper(s) as needed to make tier checks and user-facing labels reliable (e.g., explicit isFree/isPro helpers), keeping English user-facing labels."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Add dedicated frontend routes/pages for Stripe checkout success and cancellation, each with status text and a next-step action back to the dashboard.",
+      "acceptanceCriteria": [
+        "A dedicated success page/route exists with user-facing English text confirming the payment flow completed and a button to go back to the dashboard.",
+        "A dedicated cancel page/route exists with user-facing English text indicating checkout was canceled and a button to return to the dashboard and/or retry.",
+        "Routes are accessible without breaking existing routing/auth gating (dashboard remains protected)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/PaymentSuccessPage.tsx",
+          "operation": "create",
+          "description": "Create a payment success page with clear English confirmation text and a primary button that navigates the user to the dashboard (dashboard route remains protected by existing auth gating)."
+        },
+        {
+          "path": "frontend/src/pages/PaymentCancelPage.tsx",
+          "operation": "create",
+          "description": "Create a payment cancellation page with clear English text indicating checkout was canceled and provide actions to return to the dashboard and optionally retry (e.g., link back to dashboard where Upgrade CTA is shown for Free tier)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and wire new routes for the success and cancel pages (e.g., /payment-success and /payment-cancel) without adding auth guards to these pages, while keeping /dashboard protected via existing beforeLoad logic."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Add a dashboard control to manually refresh subscription status by refetching the existing React Query profile query, updating tier without full reload.",
+      "acceptanceCriteria": [
+        "A visible “Refresh subscription status” control exists on the dashboard.",
+        "Using the control re-fetches the profile data and updates the displayed tier without requiring a full page reload.",
+        "The feature uses the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Add a visible “Refresh subscription status” button/control that triggers the existing React Query pattern by calling the existing useGetCallerUserProfile() refetch and/or invalidating the ['currentUserProfile'] query via useQueryClient, updating the displayed tier without a full page reload."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "If needed for cleaner usage, expose a small helper hook for invalidating/refetching the existing ['currentUserProfile'] query (reusing the existing queryKey and avoiding any duplicate profile-fetch logic)."
+        }
+      ]
+    }
+  ]
+}

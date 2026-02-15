@@ -1,0 +1,14 @@
+{
+  "frontend/src/utils/captionGenerator.ts": "Client-side caption generation utility that creates template-based social media captions with customizable tone, platform, keywords, and call-to-actions without external AI APIs.",
+  "frontend/src/components/ai/AICaptionGenerator.tsx": "Self-contained AI Caption Generator component with input controls for topic, tone, platform, and keywords that generates 3 caption suggestions with copy-to-clipboard functionality, matching the dashboard's dark luxury styling.",
+  "frontend/src/pages/DashboardPage.tsx": "Main authenticated dashboard displaying user account details, subscription tier, refresh status button, upgrade card, Stripe configuration panel, and AI Caption Generator tool.",
+  "frontend/src/utils/subscriptionTier.ts": "Utility helpers for subscription tier operations including label conversion, tier checking functions (isFree/isPro) with safe fallback handling.",
+  "frontend/src/pages/LandingPage.tsx": "Landing page with hero section, features showcase, and pricing section displaying exactly two static marketing tiers (Free and Pro) with feature lists and CTAs.",
+  "frontend/src/config/stripeCheckoutConfig.ts": "Single source of truth for Stripe checkout configuration with localStorage persistence, validation utilities, and helpers to check if Stripe is properly configured.",
+  "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx": "Configuration UI panel for editing Stripe checkout URL and optional return URLs with inline validation, error handling, and success feedback using shadcn/ui components.",
+  "frontend/src/components/billing/UpgradeToProCard.tsx": "Dashboard card component that displays upgrade CTA for Free tier users with Stripe checkout redirect, shows Pro status for Pro users, and handles missing Stripe configuration gracefully.",
+  "frontend/src/pages/PaymentSuccessPage.tsx": "Dedicated payment success page with confirmation message and navigation back to dashboard after successful Stripe checkout completion.",
+  "frontend/src/pages/PaymentCancelPage.tsx": "Dedicated payment cancellation page with user-facing message and options to return to dashboard or retry upgrade after canceled Stripe checkout.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend operations including user profile fetching with auto-creation, profile refresh functionality using the same query key for proper cache invalidation.",
+  "frontend/src/App.tsx": "Main app component with TanStack Router setup including protected dashboard route and public payment success/cancel routes for Stripe checkout flow."
+}

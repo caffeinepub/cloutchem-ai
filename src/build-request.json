@@ -1,0 +1,93 @@
+{
+  "kind": "build_request",
+  "title": "Connect Stripe payments for upgrading Free to Pro",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "text": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Connect Stripe payments."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A single configuration location exists for Stripe checkout routing (no hardcoded Stripe URLs spread across components).",
+        "When the Stripe checkout URL is not configured, the UI shows a clear, non-crashing error state explaining that payments are not configured."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Connect Stripe payments."
+        ]
+      },
+      "acceptanceCriteria": [
+        "For a Free-tier profile, the dashboard displays an “Upgrade to Pro” button.",
+        "Clicking “Upgrade to Pro” takes the user to the configured Stripe checkout URL in the same tab.",
+        "For a Pro-tier profile, the upgrade button is not shown and the UI indicates the user is already on Pro."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Connect Stripe payments."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dedicated success page/route exists with user-facing English text confirming the payment flow completed and a button to go back to the dashboard.",
+        "A dedicated cancel page/route exists with user-facing English text indicating checkout was canceled and a button to return to the dashboard and/or retry.",
+        "Routes are accessible without breaking existing routing/auth gating (dashboard remains protected)."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Connect Stripe payments."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A visible “Refresh subscription status” control exists on the dashboard.",
+        "Using the control re-fetches the profile data and updates the displayed tier without requiring a full page reload.",
+        "The feature uses the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo changes if a persisted schema/state upgrade is required.",
+    "Do not edit any files under frontend/src/components/ui or other immutable paths listed in SYSTEM_CONTEXT.",
+    "Use English for any user-facing text."
+  ],
+  "nonGoals": [
+    "Implementing or hosting Stripe webhooks (server-side) for automatic tier verification and fulfillment.",
+    "Building a full Stripe Customer Portal or invoice history UI.",
+    "Adding additional subscription tiers beyond Free and Pro.",
+    "Changing the existing Internet Identity authentication approach."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
