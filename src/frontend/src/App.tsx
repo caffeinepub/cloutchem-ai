@@ -3,8 +3,10 @@ import { useInternetIdentity } from './hooks/useInternetIdentity';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import CameraPage from './pages/CameraPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
+import TermsPage from './pages/TermsPage';
 import AppLayout from './components/layout/AppLayout';
 
 // Root route with layout
@@ -39,6 +41,19 @@ const dashboardRoute = createRoute({
   },
 });
 
+// Camera route with protection
+const cameraRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/camera',
+  component: CameraPage,
+  beforeLoad: ({ context }) => {
+    const { isAuthenticated } = context as { isAuthenticated: boolean };
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+  },
+});
+
 // Payment success route (no auth required)
 const paymentSuccessRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -53,12 +68,21 @@ const paymentCancelRoute = createRoute({
   component: PaymentCancelPage,
 });
 
+// Terms page route (no auth required)
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/terms',
+  component: TermsPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   dashboardRoute,
+  cameraRoute,
   paymentSuccessRoute,
   paymentCancelRoute,
+  termsRoute,
 ]);
 
 function App() {

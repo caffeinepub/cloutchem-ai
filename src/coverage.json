@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T20:46:43.714Z",
+  "generatedAt": "2026-02-15T22:55:22.313Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,82 +11,81 @@
     "implemented": 4,
     "items": [
       {
-        "id": "REQ-13",
-        "summary": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
+        "id": "REQ-1",
+        "summary": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/config/stripeCheckoutConfig.ts",
-          "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/layout/Header.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/layout/Header.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/Header.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/layout/Header.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/DashboardPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/config/stripeCheckoutConfig.ts",
-          "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/DashboardPage.tsx"
         ]
       },
       {
-        "id": "REQ-14",
-        "summary": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
+        "id": "REQ-4",
+        "summary": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/billing/UpgradeToProCard.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/pages/LandingPage.tsx",
           "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/utils/subscriptionTier.ts"
+          "frontend/src/components/layout/Header.tsx",
+          "frontend/src/components/layout/Footer.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/billing/UpgradeToProCard.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/pages/LandingPage.tsx",
           "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/utils/subscriptionTier.ts"
-        ]
-      },
-      {
-        "id": "REQ-15",
-        "summary": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/PaymentSuccessPage.tsx",
-          "frontend/src/pages/PaymentCancelPage.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/PaymentSuccessPage.tsx",
-          "frontend/src/pages/PaymentCancelPage.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-16",
-        "summary": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/layout/Header.tsx",
+          "frontend/src/components/layout/Footer.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/http-outcalls/outcall.mo",
-    "backend/stripe/stripe.mo",
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
-    "frontend/src/components/billing/UpgradeToProCard.tsx",
-    "frontend/src/config/stripeCheckoutConfig.ts",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/layout/Footer.tsx",
+    "frontend/src/components/layout/Header.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/PaymentCancelPage.tsx",
-    "frontend/src/pages/PaymentSuccessPage.tsx",
-    "frontend/src/utils/subscriptionTier.ts",
+    "frontend/src/pages/LandingPage.tsx",
+    "frontend/src/pages/LoginPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

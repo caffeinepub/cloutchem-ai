@@ -2,12 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-stripe-configuration-surface-in-the-frontend-that-can-be-set-without-code-changes-including-a-single-required-value-for-a-stripe-hosted-checkout-url-e-g-a-stripe-payment-link-and-optional-success-cancel-return-urls",
-      "featureTitle": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
+      "featureId": "feature-make-internet-identity-the-only-supported-sign-up-login-method-for-cloudcam-ai-and-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route",
+      "featureTitle": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
       "files": [
-        "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
-        "frontend/src/config/stripeCheckoutConfig.ts",
-        "frontend/src/pages/DashboardPage.tsx"
+        "frontend/src/components/layout/Header.tsx",
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,20 +16,19 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "stripe@3.0.0",
-        "http-outcalls@3.0.0"
+        "http-outcalls@3.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-13"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-authenticated-dashboard-experience-to-support-upgrading-from-free-to-pro-via-stripe-when-the-current-user-s-tier-is-free-show-an-upgrade-to-pro-call-to-action-that-navigates-the-user-to-stripe-checkout-when-the-user-s-tier-is-pro-hide-the-upgrade-cta-and-show-a-you-are-on-pro-state",
-      "featureTitle": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
+      "featureId": "feature-require-authentication-internet-identity-to-use-cloudcam-ai-features-by-enforcing-route-protection-for-all-feature-pages-at-minimum-dashboard-and-camera-and-redirecting-unauthenticated-users-to-login",
+      "featureTitle": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
       "files": [
-        "frontend/src/components/billing/UpgradeToProCard.tsx",
-        "frontend/src/pages/DashboardPage.tsx",
-        "frontend/src/utils/subscriptionTier.ts"
+        "frontend/src/components/layout/Header.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -40,39 +38,17 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "stripe@3.0.0",
-        "http-outcalls@3.0.0"
+        "http-outcalls@3.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-14"
+        "REQ-2"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-handle-stripe-checkout-return-flows-in-the-frontend-add-routes-pages-for-payment-success-and-payment-cancellation-and-ensure-the-user-sees-a-clear-status-message-and-a-next-step-action-to-return-to-the-dashboard",
-      "featureTitle": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/PaymentCancelPage.tsx",
-        "frontend/src/pages/PaymentSuccessPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-15"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-manual-refresh-subscription-status-action-on-the-dashboard-that-re-fetches-the-current-user-profile-from-the-backend-so-that-users-who-complete-payment-can-immediately-see-tier-changes-once-they-have-been-applied-on-the-backend-e-g-by-an-admin-process",
-      "featureTitle": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
+      "featureId": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-without-requiring-any-additional-profile-fields-beyond-what-already-exists-principal-createdat-tier",
+      "featureTitle": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
       "files": [
         "frontend/src/hooks/useQueries.ts",
         "frontend/src/pages/DashboardPage.tsx"
@@ -85,10 +61,37 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "stripe@3.0.0",
-        "http-outcalls@3.0.0"
+        "http-outcalls@3.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-replacing-inconsistent-references-e-g-cloutchem-ai",
+      "featureTitle": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
+      "files": [
+        "frontend/src/components/layout/Footer.tsx",
+        "frontend/src/components/layout/Header.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/LandingPage.tsx",
+        "frontend/src/pages/LoginPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

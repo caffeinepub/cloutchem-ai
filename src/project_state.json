@@ -1,123 +1,42 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
-  "summary": "Build CloutChem AI: a dark-themed luxury modern SaaS web app with landing page, authentication, a post-login dashboard with an AI caption generator tool, subscription tiers (Free and Pro), and Stripe payment integration to enable paid subscriptions.",
+  "projectStateVersion": 3,
+  "summary": "CloudCam AI: add required user authentication via Internet Identity (basic sign-up/login only).",
   "architectural_notes": [
-    "AI tools are now in scope: implement an AI caption generator within the dashboard (keep the rest of the MVP minimal).",
-    "Stripe payments are now in scope: add Stripe integration (e.g., Checkout and webhooks) to support upgrading users to the Pro subscription tier."
+    "Authentication must use Internet Identity only; custom email/password accounts are not supported on the platform."
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-public-landing-page-for-cloutchem-ai-with-a-dark-luxury-modern-layout-including-1-a-hero-section-with-headline-and-short-subheadline-2-a-features-section-listing-key-benefits-marketing-copy-only-and-3-a-pricing-section-that-displays-plan-names-and-prices-as-static-content-no-purchase-flow",
-      "title": "Create a public landing page for “CloutChem AI” with a dark luxury modern layout including: (1) a hero section with headline and short subheadline, (2) a features section listing key benefits (marketing copy only), and (3) a pricing section that displays plan names and prices as static content (no purchase flow).",
+      "id": "feature-make-internet-identity-the-only-supported-sign-up-login-method-for-cloudcam-ai-and-ensure-the-app-provides-a-clear-working-login-flow-via-the-existing-login-route",
+      "title": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-user-authentication-using-internet-identity-providing-a-login-logout-experience-and-gating-authenticated-routes-so-that-only-logged-in-users-can-access-the-dashboard",
-      "title": "Implement user authentication using Internet Identity, providing a login/logout experience and gating authenticated routes so that only logged-in users can access the dashboard.",
+      "id": "feature-require-authentication-internet-identity-to-use-cloudcam-ai-features-by-enforcing-route-protection-for-all-feature-pages-at-minimum-dashboard-and-camera-and-redirecting-unauthenticated-users-to-login",
+      "title": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-a-simple-dashboard-page-shown-after-login-that-includes-a-welcome-header-and-minimal-placeholder-content-e-g-account-principal-display-and-a-coming-soon-area-without-any-ai-tools-or-subscription-controls",
-      "title": "Create a simple dashboard page shown after login that includes a welcome header and minimal placeholder content (e.g., account/principal display and a “Coming soon” area), without any AI tools or subscription controls.",
+      "id": "feature-ensure-a-basic-user-account-record-is-created-and-persisted-for-each-authenticated-principal-the-first-time-they-use-the-app-without-requiring-any-additional-profile-fields-beyond-what-already-exists-principal-createdat-tier",
+      "title": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-apply-a-coherent-dark-luxury-modern-design-system-across-all-pages-landing-auth-screens-dashboard-with-consistent-typography-spacing-and-component-styling-e-g-dark-backgrounds-high-contrast-text-refined-accent-color-subtle-borders-shadows-avoid-blue-purple-as-the-primary-accent-unless-necessary-for-accessibility",
-      "title": "Apply a coherent dark luxury modern design system across all pages (landing, auth screens, dashboard) with consistent typography, spacing, and component styling (e.g., dark backgrounds, high-contrast text, refined accent color, subtle borders/shadows). Avoid blue/purple as the primary accent unless necessary for accessibility.",
+      "id": "feature-update-all-user-facing-product-name-branding-text-in-the-ui-to-consistently-say-cloudcam-ai-english-replacing-inconsistent-references-e-g-cloutchem-ai",
+      "title": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
       "reqIds": [
         "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-basic-app-navigation-structure-public-routes-landing-login-and-protected-routes-dashboard-including-a-header-navigation-element-that-changes-based-on-auth-state-e-g-shows-login-when-logged-out-and-dashboard-logout-when-logged-in",
-      "title": "Add basic app navigation structure: public routes (Landing, Login) and protected routes (Dashboard), including a header/navigation element that changes based on auth state (e.g., shows Login when logged out and Dashboard/Logout when logged in).",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-the-generated-brand-assets-logo-and-optional-hero-background-as-static-files-under-frontend-public-assets-generated-and-use-them-in-the-landing-page-hero-header-in-a-way-that-matches-the-dark-luxury-theme",
-      "title": "Add the generated brand assets (logo and optional hero background) as static files under frontend/public/assets/generated and use them in the landing page hero/header in a way that matches the dark luxury theme.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-current-ai-tools-coming-soon-placeholder-section-on-the-dashboard-page-with-a-functional-ai-caption-generator-tool-that-is-accessible-only-within-the-existing-authenticated-dashboard-route",
-      "title": "Replace the current \"AI Tools Coming Soon\" placeholder section on the Dashboard page with a functional \"AI Caption Generator\" tool that is accessible only within the existing authenticated /dashboard route.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-ai-caption-generator-ui-and-client-side-generation-flow-collect-user-inputs-at-minimum-topic-description-tone-platform-and-optional-keywords-hashtags-generate-multiple-caption-suggestions-and-provide-copy-to-clipboard-controls-for-each-generated-caption",
-      "title": "Implement the AI Caption Generator UI and client-side generation flow: collect user inputs (at minimum: topic/description, tone, platform, and optional keywords/hashtags), generate multiple caption suggestions, and provide copy-to-clipboard controls for each generated caption.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-dashboard-to-display-the-authenticated-user-s-current-subscription-tier-free-or-pro-based-on-backend-user-profile-data-instead-of-a-hardcoded-value",
-      "title": "Update the dashboard to display the authenticated user’s current subscription tier (Free or Pro) based on backend user profile data instead of a hardcoded value.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-landing-page-pricing-section-to-present-only-two-subscription-tiers-free-and-pro-static-marketing-content-only-no-purchase-checkout-flow",
-      "title": "Update the landing page pricing section to present only two subscription tiers: Free and Pro (static marketing content only; no purchase/checkout flow).",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-stripe-configuration-surface-in-the-frontend-that-can-be-set-without-code-changes-including-a-single-required-value-for-a-stripe-hosted-checkout-url-e-g-a-stripe-payment-link-and-optional-success-cancel-return-urls",
-      "title": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-authenticated-dashboard-experience-to-support-upgrading-from-free-to-pro-via-stripe-when-the-current-user-s-tier-is-free-show-an-upgrade-to-pro-call-to-action-that-navigates-the-user-to-stripe-checkout-when-the-user-s-tier-is-pro-hide-the-upgrade-cta-and-show-a-you-are-on-pro-state",
-      "title": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-handle-stripe-checkout-return-flows-in-the-frontend-add-routes-pages-for-payment-success-and-payment-cancellation-and-ensure-the-user-sees-a-clear-status-message-and-a-next-step-action-to-return-to-the-dashboard",
-      "title": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-manual-refresh-subscription-status-action-on-the-dashboard-that-re-fetches-the-current-user-profile-from-the-backend-so-that-users-who-complete-payment-can-immediately-see-tier-changes-once-they-have-been-applied-on-the-backend-e-g-by-an-admin-process",
-      "title": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
-      "reqIds": [
-        "REQ-16"
       ],
       "version": 1
     }
@@ -125,65 +44,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Create landing page with headline, features, and pricing section (marketing-only; no subscription purchase flow).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Implement user authentication (sign up and login).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Add a simple dashboard page accessible after login.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Apply dark luxury modern design system/theme across the app.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Backend canister: store minimal per-user profile data on first authenticated use (e.g., createdAt timestamp and principal) to demonstrate a working authenticated backend call, without adding subscription or AI-related data models.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Add an AI caption generator tool inside the dashboard.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Add subscription tiers: Free and Pro.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Update the backend user profile model to include a subscription tier with exactly two values: Free and Pro, and default new users to the Free tier.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Connect Stripe payments (checkout + subscription purchase flow) to enable upgrading to the Pro tier.",
+      "summary": "Implement required user accounts (sign-up/login) using Internet Identity only; basic authentication only (no additional profile data yet).",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "CloutChem AI",
+  "projectName": "CloudCam AI",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

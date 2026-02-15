@@ -1,11 +1,12 @@
 import { Separator } from '@/components/ui/separator';
 import { Heart } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const appIdentifier = typeof window !== 'undefined' 
     ? encodeURIComponent(window.location.hostname) 
-    : 'cloutchem-ai';
+    : 'cloudcam-ai';
 
   return (
     <footer className="border-t border-border/40 bg-background/95 backdrop-blur">
@@ -13,8 +14,14 @@ export default function Footer() {
         <Separator className="mb-8 opacity-20" />
         
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>© {currentYear} CloutChem AI. All rights reserved.</span>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span>© {currentYear} CloudCam AI. All rights reserved.</span>
+            <Link 
+              to="/terms" 
+              className="text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              Terms
+            </Link>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

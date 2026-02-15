@@ -1,47 +1,79 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T20:46:43.711Z",
-  "summary": "Most Stripe frontend requirements (config surface, upgrade CTA behavior, and success/cancel return routes) appear implemented. The “Refresh subscription status” control exists, but the diff introduces a separate profile-refresh query hook with duplicated fetch logic rather than clearly reusing the existing profile query’s refetch/invalidation pattern.",
+  "generatedAt": "2026-02-15T22:55:22.310Z",
+  "summary": "Implemented an Internet Identity-based login page and updated some UI branding to “CloudCam AI”. Added backend auto-creation of a basic user profile record. However, the diff summary does not provide clear evidence that protected-route redirects (/dashboard, /camera) are enforced, and backend persistence/permissions for user profiles across upgrades and for first-time authenticated users is not fully evidenced. Significant unrequested Stripe billing and other feature work also appears to have been added.",
   "missing_requirements": [
     {
-      "id": "REQ-16",
-      "requirement": "Use the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic) for the manual “Refresh subscription status” action.",
-      "reason": "The diff adds a new hook (useRefreshUserProfile) with its own queryFn that re-fetches the profile, rather than reusing the existing useGetCallerUserProfile query instance’s refetch or queryClient.invalidateQueries-driven refetch pattern. This appears to duplicate profile-fetch logic.",
+      "id": "REQ-2",
+      "requirement": "Require authentication (Internet Identity) for feature pages (at minimum: Dashboard and Camera) and redirect unauthenticated users to /login.",
+      "reason": "The diff summary references route protection in frontend/src/App.tsx, but no actual App.tsx diff content is included to verify redirects for /dashboard and /camera or behavior after logout.",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/DashboardPage.tsx"
+        "frontend-file-summaries.txt (mentions protected routes in frontend/src/App.tsx, but without code)"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app (principal, createdAt, tier), safe to call multiple times.",
+      "reason": "Backend shows an in-memory Map-based ensureUserProfile, but the provided snippet does not show stable storage or upgrade-safe persistence for userProfiles. Additionally, getCallerUserProfile requires an AccessControl #user permission, but the diff does not show how authenticated principals are granted #user so first-time users can successfully trigger auto-creation.",
+      "evidence": [
+        "backend/main.mo (userProfiles declared as `let userProfiles = Map.empty...`; ensureUserProfile uses userProfiles.get/add; getCallerUserProfile requires AccessControl #user)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Update all user-facing product name/branding text to consistently say “CloudCam AI”, replacing inconsistent references (e.g., “CloutChem AI”).",
+      "reason": "User-facing text appears updated in several places, but the diff still includes prominent references to `cloutchem` assets in Header and Landing page. While filenames may not be user-visible, the diff summary does not demonstrate a complete audit/removal of inconsistent branding references across the UI.",
+      "evidence": [
+        "frontend/src/components/layout/Header.tsx (uses /assets/generated/cloutchem-logo...)",
+        "frontend/src/pages/LandingPage.tsx (uses /assets/generated/cloutchem-hero-bg...)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Automatically create a user profile when getCallerUserProfile returns null (auto-provisioning behavior).",
-      "reason": "Not requested by any requirement (REQ-13..REQ-16 are Stripe config/upgrade/return routes/refresh). This changes backend-fetch behavior by creating state on read.",
+      "description": "Stripe billing/checkout configuration and status endpoints added to the backend (stripeConfiguration, checkout session creation, session status, transform, admin-only config).",
+      "reason": "The BuildRequest is focused on required user accounts via Internet Identity and branding consistency; it does not request Stripe billing features.",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts"
+        "backend/main.mo (stripeConfiguration var; isStripeConfigured; setStripeConfiguration; createCheckoutSession; getStripeSessionStatus; transform)",
+        "backend/migration.mo (adds stripeConfiguration to NewActor)"
       ]
     },
     {
-      "description": "Added subscription tier helper utilities beyond what’s required for Stripe upgrade/refresh flow (e.g., getFallbackTierLabel, isFree, isPro).",
-      "reason": "Not explicitly requested in REQ-13..REQ-16; may be useful internally but is not part of stated requirements.",
+      "description": "Frontend Stripe Buy Button integration and related billing UI/components/pages (buy button script hook, buy button component, upgrade card, checkout config panel, payment success/cancel pages).",
+      "reason": "Not requested by any REQ; the request is authentication + basic account record + branding.",
       "evidence": [
-        "frontend/src/utils/subscriptionTier.ts"
+        "frontend-file-summaries.txt (StripeBuyButton, useStripeBuyButtonScript, UpgradeToProCard, StripeCheckoutConfigPanel, PaymentSuccessPage, PaymentCancelPage, stripeCheckoutConfig)"
+      ]
+    },
+    {
+      "description": "Terms of Service page and footer link to /terms.",
+      "reason": "Not requested in the BuildRequest requirements/non-goals.",
+      "evidence": [
+        "frontend/src/components/layout/Footer.tsx (adds link to /terms)",
+        "frontend-file-summaries.txt (frontend/src/pages/TermsPage.tsx)"
+      ]
+    },
+    {
+      "description": "AI Caption Generator feature/tooling on the dashboard.",
+      "reason": "Not requested; BuildRequest focuses on authentication and basic user account record only.",
+      "evidence": [
+        "frontend/src/pages/DashboardPage.tsx (imports AICaptionGenerator)",
+        "frontend-file-summaries.txt (frontend/src/components/ai/AICaptionGenerator.tsx, frontend/src/utils/captionGenerator.ts)"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.62,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
-    "frontend/src/components/billing/UpgradeToProCard.tsx",
-    "frontend/src/config/stripeCheckoutConfig.ts",
+    "frontend/src/components/layout/Footer.tsx",
+    "frontend/src/components/layout/Header.tsx",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/PaymentCancelPage.tsx",
-    "frontend/src/pages/PaymentSuccessPage.tsx",
-    "frontend/src/utils/subscriptionTier.ts",
+    "frontend/src/pages/LandingPage.tsx",
+    "frontend/src/pages/LoginPage.tsx",
     "project_state.json"
   ]
 }

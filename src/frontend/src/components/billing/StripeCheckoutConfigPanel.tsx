@@ -51,7 +51,7 @@ export default function StripeCheckoutConfigPanel() {
           <CardTitle className="text-xl">Stripe Checkout Configuration</CardTitle>
         </div>
         <CardDescription>
-          Configure your Stripe-hosted checkout URL for payment processing
+          Configure your Stripe-hosted checkout URL as a fallback payment method when the embedded buy button is unavailable
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

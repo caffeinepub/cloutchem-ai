@@ -1,103 +1,104 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Stripe-hosted checkout upgrade flow (Free → Pro)",
+  "title": "CloudCam AI Internet Identity-only authentication, protected routes, and consistent branding",
   "requirements": [
     {
-      "id": "REQ-13",
-      "summary": "Provide a single, editable frontend configuration surface for Stripe-hosted checkout URL plus optional success/cancel return URLs, with a clear error state when missing.",
+      "id": "REQ-1",
+      "summary": "Ensure Internet Identity is the only login method and the /login route provides a clear, working Internet Identity sign-in flow.",
       "acceptanceCriteria": [
-        "A single configuration location exists for Stripe checkout routing (no hardcoded Stripe URLs spread across components).",
-        "When the Stripe checkout URL is not configured, the UI shows a clear, non-crashing error state explaining that payments are not configured."
+        "When unauthenticated, users can navigate to /login and initiate an Internet Identity login.",
+        "The login UI clearly indicates authentication is handled via Internet Identity (no email/password UI is presented).",
+        "On successful login, the user is considered authenticated in the app shell (header/navigation updates accordingly)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/config/stripeCheckoutConfig.ts",
-          "operation": "create",
-          "description": "Create a single source of truth for Stripe checkout configuration (required checkout URL + optional success/cancel return URLs), including read/write helpers (e.g., localStorage-backed) and validation utilities to detect missing/invalid configuration."
-        },
-        {
-          "path": "frontend/src/components/billing/StripeCheckoutConfigPanel.tsx",
-          "operation": "create",
-          "description": "Add a configuration UI panel for editing the Stripe checkout configuration at runtime (without code changes), using existing shadcn/ui components for inputs, buttons, and alerts; include inline validation and an explicit error message when the required checkout URL is empty/invalid."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Wire the StripeCheckoutConfigPanel into the authenticated dashboard (e.g., a card/section), ensuring there is one clear place to update the Stripe checkout URL and that the dashboard can surface a non-crashing 'payments not configured' message when appropriate."
+          "description": "Update the /login UI copy to reference “CloudCam AI” and clearly indicate Internet Identity is used; keep only Internet Identity controls (no email/password). Use existing Internet Identity auth via the authorization component’s frontend guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/Header.tsx",
+          "operation": "modify",
+          "description": "Ensure the authenticated app shell state is clearly reflected in the header (sign-in vs sign-out controls) using the existing Internet Identity state. Use the authorization component’s frontend guidance for login/logout behaviors (including clearing cached data on logout); verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-14",
-      "summary": "Update dashboard to show an Upgrade to Pro CTA for Free-tier users that redirects to the configured Stripe checkout URL, and a Pro state that hides the CTA.",
+      "id": "REQ-2",
+      "summary": "Protect feature routes (Dashboard and Camera at minimum) so unauthenticated users are redirected to /login, and ensure logout immediately removes access to protected routes.",
       "acceptanceCriteria": [
-        "For a Free-tier profile, the dashboard displays an “Upgrade to Pro” button.",
-        "Clicking “Upgrade to Pro” takes the user to the configured Stripe checkout URL in the same tab.",
-        "For a Pro-tier profile, the upgrade button is not shown and the UI indicates the user is already on Pro."
+        "Visiting /dashboard while logged out redirects to /login.",
+        "Visiting /camera while logged out redirects to /login.",
+        "After logging out, protected routes are no longer accessible until logging back in."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/components/billing/UpgradeToProCard.tsx",
-          "operation": "create",
-          "description": "Create a dashboard card/section that (a) detects the current tier from the provided profile, (b) shows an “Upgrade to Pro” button only for Free tier, (c) redirects in the same tab via window.location.href to the configured Stripe-hosted checkout URL, and (d) shows a “You are on Pro” state (no upgrade CTA) when tier is Pro; when checkout config is missing, show a clear non-crashing error state instead of redirecting."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Add UpgradeToProCard to the dashboard and pass the current userProfile/tier; ensure the existing “Plan” display remains consistent and the upgrade CTA is hidden when tier is Pro."
-        },
-        {
-          "path": "frontend/src/utils/subscriptionTier.ts",
-          "operation": "modify",
-          "description": "Adjust/add small helper(s) as needed to make tier checks and user-facing labels reliable (e.g., explicit isFree/isPro helpers), keeping English user-facing labels."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Add dedicated frontend routes/pages for Stripe checkout success and cancellation, each with status text and a next-step action back to the dashboard.",
-      "acceptanceCriteria": [
-        "A dedicated success page/route exists with user-facing English text confirming the payment flow completed and a button to go back to the dashboard.",
-        "A dedicated cancel page/route exists with user-facing English text indicating checkout was canceled and a button to return to the dashboard and/or retry.",
-        "Routes are accessible without breaking existing routing/auth gating (dashboard remains protected)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/PaymentSuccessPage.tsx",
-          "operation": "create",
-          "description": "Create a payment success page with clear English confirmation text and a primary button that navigates the user to the dashboard (dashboard route remains protected by existing auth gating)."
-        },
-        {
-          "path": "frontend/src/pages/PaymentCancelPage.tsx",
-          "operation": "create",
-          "description": "Create a payment cancellation page with clear English text indicating checkout was canceled and provide actions to return to the dashboard and optionally retry (e.g., link back to dashboard where Upgrade CTA is shown for Free tier)."
-        },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Register and wire new routes for the success and cancel pages (e.g., /payment-success and /payment-cancel) without adding auth guards to these pages, while keeping /dashboard protected via existing beforeLoad logic."
+          "description": "Review and harden route protection for /dashboard and /camera so unauthenticated users are redirected to /login (keep using router-level guards). Ensure route protection relies on Internet Identity authentication state per the authorization component’s frontend guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/Header.tsx",
+          "operation": "modify",
+          "description": "After logout, proactively navigate the user to /login (in addition to clearing Internet Identity + React Query cache) so protected content is not left visible on-screen. Follow the authorization component’s guidance to clear cached application data on logout; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-16",
-      "summary": "Add a dashboard control to manually refresh subscription status by refetching the existing React Query profile query, updating tier without full reload.",
+      "id": "REQ-3",
+      "summary": "Automatically ensure a basic user account record exists for each authenticated principal on first use, without requiring extra profile fields.",
       "acceptanceCriteria": [
-        "A visible “Refresh subscription status” control exists on the dashboard.",
-        "Using the control re-fetches the profile data and updates the displayed tier without requiring a full page reload.",
-        "The feature uses the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic)."
+        "After first successful login, fetching the caller profile results in an existing profile (auto-created if missing).",
+        "Creating a profile is safe to call multiple times for the same principal (does not trap or corrupt state).",
+        "No new profile fields beyond the existing principal/createdAt/tier are required to complete account setup."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Add a visible “Refresh subscription status” button/control that triggers the existing React Query pattern by calling the existing useGetCallerUserProfile() refetch and/or invalidating the ['currentUserProfile'] query via useQueryClient, updating the displayed tier without a full page reload."
-        },
-        {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "If needed for cleaner usage, expose a small helper hook for invalidating/refetching the existing ['currentUserProfile'] query (reusing the existing queryKey and avoiding any duplicate profile-fetch logic)."
+          "description": "Align profile loading with the available backend interface and add an idempotent “ensure profile exists” flow: when authenticated, check whether a profile exists for the current principal and, if missing, create it by saving a minimal UserProfile (principal, createdAt, tier) before re-fetching. Use Internet Identity principal and follow the authorization component’s frontend guidance around profile setup and avoiding modal/flash states; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Adjust dashboard usage of profile hooks so the page behaves correctly during the first-login auto-create flow (loading and error states remain clear; no extra profile fields are requested). Use the authorization component’s guidance for authenticated data access patterns; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Replace inconsistent branding text so the UI consistently uses the product name “CloudCam AI” in English.",
+      "acceptanceCriteria": [
+        "Login page text references “CloudCam AI” (not “CloutChem AI”) in the sign-in messaging.",
+        "Header/landing/dashboard user-facing text uses “CloudCam AI” consistently.",
+        "No new non-English user-facing strings are introduced as part of this change."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Replace any remaining “CloutChem AI” references with “CloudCam AI” in user-facing login messaging (English only)."
+        },
+        {
+          "path": "frontend/src/pages/LandingPage.tsx",
+          "operation": "modify",
+          "description": "Replace user-facing marketing/CTA references from “CloutChem AI” to “CloudCam AI” (English only), including hero and CTA sections. Ensure any existing hero imagery references remain wired correctly; if using generated assets, reference the existing files at frontend/public/assets/generated/cloutchem-hero-bg.dim_1920x1080.png."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Replace the dashboard welcome/header branding text from “CloutChem AI” to “CloudCam AI” (English only)."
+        },
+        {
+          "path": "frontend/src/components/layout/Header.tsx",
+          "operation": "modify",
+          "description": "Update logo alt text and any header-visible branding text to “CloudCam AI” (English only). Ensure the existing generated logo asset remains correctly referenced at frontend/public/assets/generated/cloutchem-logo.dim_512x192.png."
+        },
+        {
+          "path": "frontend/src/components/layout/Footer.tsx",
+          "operation": "modify",
+          "description": "Replace footer copyright/identifier text from “CloutChem AI” to “CloudCam AI” (English only), including any default identifiers that appear in user-facing contexts."
         }
       ]
     }

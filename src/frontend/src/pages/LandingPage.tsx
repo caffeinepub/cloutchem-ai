@@ -4,10 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Sparkles, Zap, TrendingUp, Shield, Check } from 'lucide-react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import StripeBuyButton from '../components/billing/StripeBuyButton';
+import { useStripeBuyButtonScript } from '../hooks/useStripeBuyButtonScript';
 
 export default function LandingPage() {
   const { identity } = useInternetIdentity();
   const isAuthenticated = !!identity;
+  const { isLoaded: stripeBuyButtonReady } = useStripeBuyButtonScript();
 
   return (
     <div className="min-h-screen">
@@ -37,7 +40,7 @@ export default function LandingPage() {
               </span>
               <br />
               <span className="bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
-                CloutChem AI
+                CloudCam AI
               </span>
             </h1>
 
@@ -254,9 +257,13 @@ export default function LandingPage() {
                     <span className="text-muted-foreground">Custom branding options</span>
                   </li>
                 </ul>
-                <Button className="w-full mt-6 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold">
-                  Upgrade to Pro
-                </Button>
+                {stripeBuyButtonReady ? (
+                  <StripeBuyButton className="w-full mt-6" />
+                ) : (
+                  <Button className="w-full mt-6 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold">
+                    Upgrade to Pro
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -275,7 +282,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of creators who are already using CloutChem AI to elevate their social media presence.
+              Join thousands of creators who are already using CloudCam AI to elevate their social media presence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
               {isAuthenticated ? (

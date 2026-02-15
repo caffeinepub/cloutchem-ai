@@ -1,12 +1,13 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2, LogOut, LayoutDashboard } from 'lucide-react';
+import { Loader2, LogOut, LayoutDashboard, Video } from 'lucide-react';
 
 export default function Header() {
   const { identity, clear, loginStatus } = useInternetIdentity();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const isAuthenticated = !!identity;
   const isLoggingIn = loginStatus === 'logging-in';
@@ -14,6 +15,7 @@ export default function Header() {
   const handleLogout = async () => {
     await clear();
     queryClient.clear();
+    navigate({ to: '/login' });
   };
 
   return (
@@ -23,7 +25,7 @@ export default function Header() {
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <img
             src="/assets/generated/cloutchem-logo.dim_512x192.png"
-            alt="CloutChem AI"
+            alt="CloudCam AI"
             className="h-8 w-auto"
           />
         </Link>
@@ -36,6 +38,12 @@ export default function Header() {
                 <Button variant="ghost" className="gap-2">
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
+                </Button>
+              </Link>
+              <Link to="/camera">
+                <Button variant="ghost" className="gap-2">
+                  <Video className="w-4 h-4" />
+                  Camera
                 </Button>
               </Link>
               <Button

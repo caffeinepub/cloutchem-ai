@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Enable Stripe-hosted checkout for upgrading authenticated users from Free to Pro, with clear return flows and a way to refresh subscription status.
+**Goal:** Make Internet Identity the only authentication method for CloudCam AI, require login for feature access, and ensure a basic user account record is created on first use, while updating all UI branding text to “CloudCam AI”.
 
 **Planned changes:**
-- Add a single frontend configuration surface for Stripe checkout URL (required) and optional success/cancel return URLs, with a clear error state when not configured.
-- Update the authenticated dashboard to show an “Upgrade to Pro” CTA for Free users that navigates to the configured Stripe checkout URL, and a “You are on Pro” state for Pro users.
-- Add dedicated frontend routes/pages for Stripe checkout success and cancellation, each with a clear status message and a button to return to the dashboard (and/or retry from cancel).
-- Add a “Refresh subscription status” action on the dashboard that re-fetches the current user profile via the existing React Query refetch/invalidation pattern.
+- Implement/verify a clear Internet Identity-only login flow on the existing `/login` route (no email/password UI).
+- Add route protection for feature pages (at minimum `/dashboard` and `/camera`) to redirect unauthenticated users to `/login`, and ensure logout revokes access to protected routes.
+- Create and persist a basic user account record for each authenticated principal on first use (principal, createdAt, tier), safe to call multiple times.
+- Replace inconsistent product/branding text across the UI so it consistently says “CloudCam AI” (English).
 
-**User-visible outcome:** Free-tier users can click “Upgrade to Pro” to go to Stripe checkout and return to the app on success/cancel pages; after payment, users can refresh their subscription status on the dashboard to see updated tier changes without reloading.
+**User-visible outcome:** Users can sign in only with Internet Identity via `/login`; logged-out users are redirected to login when visiting Dashboard/Camera; after first login a basic account is automatically created; all UI text consistently refers to “CloudCam AI”.

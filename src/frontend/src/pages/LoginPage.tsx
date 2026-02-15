@@ -41,7 +41,7 @@ export default function LoginPage() {
             </span>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Sign in to access your CloutChem AI dashboard
+            Sign in to access your CloudCam AI dashboard
           </p>
         </div>
 

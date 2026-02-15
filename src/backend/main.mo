@@ -1,12 +1,17 @@
-import Principal "mo:core/Principal";
 import Map "mo:core/Map";
+import Text "mo:core/Text";
 import Time "mo:core/Time";
+import Principal "mo:core/Principal";
+import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
 
+import Migration "migration";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Stripe "stripe/stripe";
+import OutCall "http-outcalls/outcall";
 
-
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -17,72 +22,91 @@ actor {
   };
 
   public type UserProfile = {
-    principal : Principal;
+    principal : Principal.Principal;
     createdAt : Int;
     tier : SubscriptionTier;
   };
 
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  let userProfiles = Map.empty<Principal.Principal, UserProfile>();
 
-  public shared ({ caller }) func createUserProfile() : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can create profiles");
-    };
-    let profile : UserProfile = {
-      principal = caller;
-      createdAt = Time.now();
-      tier = #free;
-    };
-    userProfiles.add(caller, profile);
+  // Stripe configuration
+  var stripeConfiguration : ?Stripe.StripeConfiguration = null;
+
+  public query func isStripeConfigured() : async Bool {
+    stripeConfiguration != null;
   };
 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
+  public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can perform this action");
     };
-    userProfiles.get(caller);
+    stripeConfiguration := ?config;
+  };
+
+  func getStripeConfiguration() : Stripe.StripeConfiguration {
+    switch (stripeConfiguration) {
+      case (null) { Runtime.trap("Stripe needs to be first configured") };
+      case (?value) { value };
+    };
+  };
+
+  public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+    await Stripe.getSessionStatus(getStripeConfiguration(), sessionId, transform);
+  };
+
+  public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
+  };
+
+  public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
+    OutCall.transform(input);
+  };
+
+  // User Profile Management
+  private func ensureUserProfile(principal : Principal.Principal) : UserProfile {
+    switch (userProfiles.get(principal)) {
+      case (?profile) { profile };
+      case (null) {
+        let newProfile : UserProfile = {
+          principal;
+          createdAt = Time.now();
+          tier = #free;
+        };
+        userProfiles.add(principal, newProfile);
+        newProfile;
+      };
+    };
+  };
+
+  public shared ({ caller }) func getCallerUserProfile() : async UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access profiles");
+    };
+    ensureUserProfile(caller);
+  };
+
+  public query ({ caller }) func getUserProfile(user : Principal.Principal) : async ?UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access profiles");
+    };
+    userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    
-    // Security: Verify that the profile being saved belongs to the caller
     if (profile.principal != caller) {
-      Runtime.trap("Unauthorized: Cannot modify another user's profile");
+      Runtime.trap("Unauthorized: Can only save your own profile");
     };
-    
-    // Security: Prevent users from modifying protected fields
-    // Users cannot change their tier or createdAt timestamp
-    switch (userProfiles.get(caller)) {
-      case (?existingProfile) {
-        // Preserve protected fields from existing profile
-        let updatedProfile : UserProfile = {
-          principal = caller;
-          createdAt = existingProfile.createdAt;
-          tier = existingProfile.tier;
-        };
-        userProfiles.add(caller, updatedProfile);
-      };
-      case null {
-        Runtime.trap("Profile does not exist. Create profile first.");
-      };
-    };
+    userProfiles.add(caller, profile);
   };
 
-  public query ({ caller }) func getUserProfile(principal : Principal) : async ?UserProfile {
-    if (caller != principal and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
-    };
-    userProfiles.get(principal);
-  };
-
-  public shared ({ caller }) func updateUserTier(user : Principal, tier : SubscriptionTier) : async () {
+  public shared ({ caller }) func updateUserTier(user : Principal.Principal, tier : SubscriptionTier) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can update subscription tiers");
     };
-    
+
     switch (userProfiles.get(user)) {
       case (?existingProfile) {
         let updatedProfile : UserProfile = {
@@ -93,8 +117,20 @@ actor {
         userProfiles.add(user, updatedProfile);
       };
       case null {
-        Runtime.trap("User profile not found");
+        let newProfile : UserProfile = {
+          principal = user;
+          createdAt = Time.now();
+          tier;
+        };
+        userProfiles.add(user, newProfile);
       };
     };
+  };
+
+  public query ({ caller }) func getAllUserProfiles() : async [UserProfile] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Admin privileges required");
+    };
+    userProfiles.values().toArray();
   };
 };

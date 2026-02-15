@@ -73,7 +73,7 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-4xl font-bold tracking-tight">
                   <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                    Welcome to CloutChem AI
+                    Welcome to CloudCam AI
                   </span>
                 </h1>
                 <p className="text-lg text-muted-foreground mt-1">

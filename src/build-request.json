@@ -1,93 +1,108 @@
 {
   "kind": "build_request",
-  "title": "Connect Stripe payments for upgrading Free to Pro",
+  "title": "Implement required user accounts for CloudCam AI using Internet Identity",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-13",
-      "text": "Add a Stripe configuration surface in the frontend that can be set without code changes, including a single required value for a Stripe-hosted checkout URL (e.g., a Stripe Payment Link) and optional success/cancel return URLs.",
+      "id": "REQ-1",
+      "text": "Make Internet Identity the only supported sign-up/login method for CloudCam AI and ensure the app provides a clear, working login flow via the existing /login route.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-6",
+          "msg-9",
+          "msg-12"
         ],
         "quotes": [
-          "Connect Stripe payments."
+          "Add a user account feature to CloudCam AI so users can sign up and log in.",
+          "for number one it can be both",
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "A single configuration location exists for Stripe checkout routing (no hardcoded Stripe URLs spread across components).",
-        "When the Stripe checkout URL is not configured, the UI shows a clear, non-crashing error state explaining that payments are not configured."
+        "When unauthenticated, users can navigate to /login and initiate an Internet Identity login.",
+        "The login UI clearly indicates authentication is handled via Internet Identity (no email/password UI is presented).",
+        "On successful login, the user is considered authenticated in the app shell (header/navigation updates accordingly)."
       ]
     },
     {
-      "id": "REQ-14",
-      "text": "Update the authenticated dashboard experience to support upgrading from Free to Pro via Stripe: when the current user’s tier is Free, show an “Upgrade to Pro” call-to-action that navigates the user to Stripe checkout; when the user’s tier is Pro, hide the upgrade CTA and show a “You are on Pro” state.",
+      "id": "REQ-2",
+      "text": "Require authentication (Internet Identity) to use CloudCam AI features by enforcing route protection for all feature pages (at minimum: Dashboard and Camera) and redirecting unauthenticated users to /login.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-8"
         ],
         "quotes": [
-          "Connect Stripe payments."
+          "3 required"
         ]
       },
       "acceptanceCriteria": [
-        "For a Free-tier profile, the dashboard displays an “Upgrade to Pro” button.",
-        "Clicking “Upgrade to Pro” takes the user to the configured Stripe checkout URL in the same tab.",
-        "For a Pro-tier profile, the upgrade button is not shown and the UI indicates the user is already on Pro."
+        "Visiting /dashboard while logged out redirects to /login.",
+        "Visiting /camera while logged out redirects to /login.",
+        "After logging out, protected routes are no longer accessible until logging back in."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Handle Stripe checkout return flows in the frontend: add routes/pages for payment success and payment cancellation, and ensure the user sees a clear status message and a next-step action to return to the dashboard.",
-      "target": "frontend",
+      "id": "REQ-3",
+      "text": "Ensure a basic user account record is created and persisted for each authenticated principal the first time they use the app, without requiring any additional profile fields beyond what already exists (principal, createdAt, tier).",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7",
+          "msg-9"
         ],
         "quotes": [
-          "Connect Stripe payments."
+          "for number 2 just the basic login for now",
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "A dedicated success page/route exists with user-facing English text confirming the payment flow completed and a button to go back to the dashboard.",
-        "A dedicated cancel page/route exists with user-facing English text indicating checkout was canceled and a button to return to the dashboard and/or retry.",
-        "Routes are accessible without breaking existing routing/auth gating (dashboard remains protected)."
+        "After first successful login, fetching the caller profile results in an existing profile (auto-created if missing).",
+        "Creating a profile is safe to call multiple times for the same principal (does not trap or corrupt state).",
+        "No new profile fields beyond the existing principal/createdAt/tier are required to complete account setup."
       ]
     },
     {
-      "id": "REQ-16",
-      "text": "Add a manual “Refresh subscription status” action on the dashboard that re-fetches the current user profile from the backend so that users who complete payment can immediately see tier changes once they have been applied on the backend (e.g., by an admin process).",
+      "id": "REQ-4",
+      "text": "Update all user-facing product name/branding text in the UI to consistently say “CloudCam AI” (English), replacing inconsistent references (e.g., “CloutChem AI”).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-6"
         ],
         "quotes": [
-          "Connect Stripe payments."
+          "Add a user account feature to CloudCam AI so users can sign up and log in."
         ]
       },
       "acceptanceCriteria": [
-        "A visible “Refresh subscription status” control exists on the dashboard.",
-        "Using the control re-fetches the profile data and updates the displayed tier without requiring a full page reload.",
-        "The feature uses the existing React Query profile query invalidation/refetch pattern (no duplicate profile-fetch logic)."
+        "Login page text references “CloudCam AI” (not “CloutChem AI”) in the sign-in messaging.",
+        "Header/landing/dashboard user-facing text uses “CloudCam AI” consistently.",
+        "No new non-English user-facing strings are introduced as part of this change."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo changes if a persisted schema/state upgrade is required.",
-    "Do not edit any files under frontend/src/components/ui or other immutable paths listed in SYSTEM_CONTEXT.",
-    "Use English for any user-facing text."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if a state upgrade is required.",
+    "Do not modify any files under frontend/src/components/ui or any paths listed as immutable: frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx."
   ],
   "nonGoals": [
-    "Implementing or hosting Stripe webhooks (server-side) for automatic tier verification and fulfillment.",
-    "Building a full Stripe Customer Portal or invoice history UI.",
-    "Adding additional subscription tiers beyond Free and Pro.",
-    "Changing the existing Internet Identity authentication approach."
+    "Implementing custom email/password authentication.",
+    "Adding expanded user profile fields (e.g., username, bio, avatar) beyond the existing basic account record.",
+    "Adding third-party auth providers beyond Internet Identity."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

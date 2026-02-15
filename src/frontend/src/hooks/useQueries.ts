@@ -5,19 +5,12 @@ import type { UserProfile } from '../backend';
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  const query = useQuery<UserProfile | null>({
+  const query = useQuery<UserProfile>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      const profile = await actor.getCallerUserProfile();
-      
-      // If no profile exists, create one automatically
-      if (profile === null) {
-        await actor.createUserProfile();
-        return await actor.getCallerUserProfile();
-      }
-      
-      return profile;
+      // Backend auto-creates profile via ensureUserProfile
+      return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
     retry: false,
@@ -33,28 +26,13 @@ export function useGetCallerUserProfile() {
 export function useRefreshUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<UserProfile | null>({
+  return useQuery<UserProfile>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return await actor.getCallerUserProfile();
     },
     enabled: false, // Only fetch when explicitly called via refetch
-  });
-}
-
-export function useCreateUserProfile() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.createUserProfile();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-    },
   });
 }
 
