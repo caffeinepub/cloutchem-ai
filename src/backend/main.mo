@@ -5,15 +5,21 @@ import Principal "mo:core/Principal";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
 import List "mo:core/List";
-import Migration "migration";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import Stripe "stripe/stripe";
+import Storage "blob-storage/Storage";
+import MixinStorage "blob-storage/Mixin";
 import OutCall "http-outcalls/outcall";
+import Nat "mo:core/Nat";
 
-(with migration = Migration.run)
+// Use data migration when modifying persistent data. Also for adding, removing, or modifying data types, or when values of persistent data change.
+// declare with migration clause and run imported migration script
+
 actor {
+  include MixinStorage();
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -23,19 +29,29 @@ actor {
   };
 
   public type UserProfile = {
-    principal : Principal.Principal;
+    caller : Principal.Principal;
     createdAt : Int;
     tier : SubscriptionTier;
   };
+
+  public type CaptureType = { #photo; #video };
 
   public type SecurityQuestion = {
     question : Text;
     answer : Text;
   };
 
+  public type Capture = {
+    id : Text;
+    createdAt : Int;
+    captureType : CaptureType;
+    blob : Storage.ExternalBlob;
+    aiCaption : Text;
+  };
+
   let userProfiles = Map.empty<Principal.Principal, UserProfile>();
   let userSecurityQuestions = Map.empty<Principal.Principal, List.List<SecurityQuestion>>();
-
+  let userCaptures = Map.empty<Principal.Principal, List.List<Capture>>();
   var stripeConfiguration : ?Stripe.StripeConfiguration = null;
 
   public query func isStripeConfigured() : async Bool {
@@ -74,16 +90,16 @@ actor {
     OutCall.transform(input);
   };
 
-  private func ensureUserProfile(principal : Principal.Principal) : UserProfile {
-    switch (userProfiles.get(principal)) {
+  private func ensureUserProfile(caller : Principal.Principal) : UserProfile {
+    switch (userProfiles.get(caller)) {
       case (?profile) { profile };
       case null {
         let newProfile : UserProfile = {
-          principal;
+          caller;
           createdAt = Time.now();
           tier = #free;
         };
-        userProfiles.add(principal, newProfile);
+        userProfiles.add(caller, newProfile);
         newProfile;
       };
     };
@@ -94,11 +110,14 @@ actor {
   };
 
   public query ({ caller }) func getUserProfile(user : Principal.Principal) : async ?UserProfile {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own profile");
+    };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (profile.principal != caller) {
+    if (profile.caller != caller) {
       Runtime.trap("Unauthorized: Can only save your own profile");
     };
     userProfiles.add(caller, profile);
@@ -112,7 +131,7 @@ actor {
     switch (userProfiles.get(user)) {
       case (?existingProfile) {
         let updatedProfile : UserProfile = {
-          principal = existingProfile.principal;
+          caller = existingProfile.caller;
           createdAt = existingProfile.createdAt;
           tier = tier;
         };
@@ -120,7 +139,7 @@ actor {
       };
       case null {
         let newProfile : UserProfile = {
-          principal = user;
+          caller = user;
           createdAt = Time.now();
           tier;
         };
@@ -130,7 +149,51 @@ actor {
   };
 
   public query ({ caller }) func getAllUserProfiles() : async [UserProfile] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all user profiles");
+    };
     userProfiles.values().toArray();
+  };
+
+  // Capture Management
+
+  public shared ({ caller }) func saveCapture(capture : Capture) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save captures");
+    };
+    let capturesList = switch (userCaptures.get(caller)) {
+      case (?list) { list };
+      case (null) { List.empty<Capture>() };
+    };
+    capturesList.add(capture);
+    userCaptures.add(caller, capturesList);
+  };
+
+  public query ({ caller }) func getMyCaptures() : async [Capture] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access captures");
+    };
+    switch (userCaptures.get(caller)) {
+      case (?list) { list.toArray() };
+      case (null) { [] };
+    };
+  };
+
+  public shared ({ caller }) func deleteCapture(captureId : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can delete captures");
+    };
+    switch (userCaptures.get(caller)) {
+      case (?capturesList) {
+        let filtered = capturesList.toArray().filter(
+          func(capture) { capture.id != captureId }
+        );
+        userCaptures.add(caller, List.fromArray<Capture>(filtered));
+      };
+      case (null) {
+        Runtime.trap("No captures found for user");
+      };
+    };
   };
 
   // Security questions

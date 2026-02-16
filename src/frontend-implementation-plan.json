@@ -1,84 +1,66 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add security questions setup + in-app account recovery (authenticated)",
+  "title": "Add public FAQ & Help Center page and footer link",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Gate initial post-login onboarding on completing a 2+ security questions setup step, then allow access to dashboard/camera as normal.",
+      "id": "REQ-1",
+      "summary": "Create a new public “CloudCam AI – FAQ & Help Center” page rendering the exact user-provided FAQ content and a support email mailto link.",
       "acceptanceCriteria": [
-        "After Internet Identity login, the app checks backend security-question setup status.",
-        "If not set up, the user is routed to or shown a dedicated setup UI that requires at least two Q/A entries and validates required fields.",
-        "On successful save, the user can proceed to the dashboard and protected routes as normal.",
-        "All user-facing text is in English and does not imply CloudCam AI can reset an Internet Identity password."
+        "A new React page exists at a dedicated route and renders the FAQ title, short description, and all Q/A items from the user-provided content.",
+        "The Support email is displayed as “infocloudchemai@gmail.com” and clicking it opens the user’s email client via a mailto link.",
+        "All user-facing text on the page is in English and matches the provided FAQ wording (including plan details and capture instructions)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useSecurityQuestions.ts",
+          "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
           "operation": "create",
-          "description": "Create React Query hooks to: (1) query security-question setup status via backend (hasSecurityQuestions), and (2) save initial security questions via backend (setSecurityQuestions). Include consistent handling of authorization failures surfaced from the authorization system. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/security/SecurityQuestionsForm.tsx",
-          "operation": "create",
-          "description": "Create a reusable form component for collecting custom security questions and answers (minimum 2), with client-side validation and UX for adding/removing entries. Compose shadcn/ui primitives (do not modify components under frontend/src/components/ui). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
-          "operation": "create",
-          "description": "Add a dedicated “Security Questions Setup” page shown to authenticated users who have not completed setup. Use the SecurityQuestionsForm component and the save hook to persist. Copy must be English and explicitly scoped to in-app recovery/security questions (must not claim to reset Internet Identity passwords). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Update post-auth navigation: after successful Internet Identity login, query backend setup status (hasSecurityQuestions) and route the user to /security-questions-setup when not set up; otherwise route to /dashboard. Keep flow within Internet Identity (no username/password). Verify the component's usage instructions before implementing."
-        },
+          "description": "Implement the new static FAQ & Help Center React page and paste in the exact FAQ title/description and all Q/A content (Subscriptions, Camera & Captures, Account & Login, Support) exactly as provided by the user; include the support email as visible text and as a mailto link for infocloudchemai@gmail.com. Use shadcn-ui Card and Separator components to structure the content; Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Register a new public /faq route in TanStack Router without authentication guards.",
+      "acceptanceCriteria": [
+        "Navigating directly to /faq renders the FAQ & Help Center page.",
+        "The FAQ route is not protected by authentication guards (unlike /dashboard, /camera, /my-captures, etc.)."
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Register a new authenticated route for /security-questions-setup. Add route guarding so only authenticated users can access it. Also wire setup enforcement into protected app flow by redirecting authenticated users who have not completed setup away from /dashboard and /camera to /security-questions-setup (implemented via page-level checks or route-level loaders without touching forbidden auth hooks). Verify the component's usage instructions before implementing."
-        },
+          "description": "Add an import for the new FaqHelpCenterPage and register a new TanStack Router route at path \"/faq\" under the root route, ensuring there is no beforeLoad redirect/auth guard so it remains publicly accessible."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add a footer navigation link to /faq alongside Terms and Privacy links with matching styling.",
+      "acceptanceCriteria": [
+        "The footer includes a Link that navigates to the FAQ route.",
+        "The footer link styling matches the existing footer link styles (consistent hover/underline behavior)."
+      ],
+      "file_operations": [
         {
-          "path": "frontend/src/pages/DashboardPage.tsx",
+          "path": "frontend/src/components/layout/Footer.tsx",
           "operation": "modify",
-          "description": "Enforce setup gating: if authenticated but security questions are not set up, redirect to /security-questions-setup instead of rendering dashboard content. Add a visible in-app link/button to “Account recovery / Security questions” (navigates to /account-recovery). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/CameraPage.tsx",
-          "operation": "modify",
-          "description": "Enforce setup gating: if authenticated but security questions are not set up, redirect to /security-questions-setup before allowing access to the camera experience. Verify the component's usage instructions before implementing."
+          "description": "Add a new TanStack Router Link to \"/faq\" labeled \"FAQ\" alongside existing Terms and Privacy links, reusing the same className styling for consistent hover/underline behavior."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Provide an authenticated Account Recovery page that verifies security-question answers and, if successful, allows resetting/changing security questions (2+).",
+      "summary": "Style the FAQ page to match existing static legal pages and the app’s visual system (Card layout, separators, typography, spacing).",
       "acceptanceCriteria": [
-        "There is a UI route/page accessible to authenticated users where they can answer their security questions.",
-        "If verification succeeds, the UI allows the user to set new security questions (minimum 2) and saves them via the backend.",
-        "If verification fails, the UI shows a clear error state without leaking which answers were incorrect.",
-        "No email, SMS, or external messaging is used anywhere in the flow."
+        "The FAQ page uses the same general layout pattern as existing static pages (container spacing, Card styling, section headers, readable body text).",
+        "The page remains responsive and readable on mobile and desktop."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useSecurityQuestions.ts",
+          "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
           "operation": "modify",
-          "description": "Extend hooks to support verifying answers (verifySecurityQuestions) and resetting/replacing questions after success (resetSecurityQuestions). Ensure the verify result only yields success/failure UI states, and handle authorization errors consistently (per authorization component guidance). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/AccountRecoveryPage.tsx",
-          "operation": "create",
-          "description": "Create an authenticated “Account Recovery” page at /account-recovery with two steps: (1) verify answers (generic failure message), then (2) allow setting new security questions (min 2) and saving them. Explicitly state this is in-app recovery and does not reset Internet Identity credentials. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire /account-recovery into the router as an authenticated route. Ensure navigation to success/failure states stays on-page (no additional routes required) and no email/SMS flows are introduced. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/Header.tsx",
-          "operation": "modify",
-          "description": "Add an authenticated navigation entry to /account-recovery (e.g., “Account recovery”) so users can access the page easily. Compose existing shadcn/ui Button/Link components (do not modify UI primitives). Verify the component's usage instructions before implementing."
+          "description": "Align the FAQ page layout and typography to match existing static pages (e.g., TermsPage/PrivacyPolicyPage): use the same gradient background, container sizing/spacing, Card styling, section headers, and Separator usage for readability and responsive behavior. Use shadcn-ui Card and Separator components rather than editing any files under frontend/src/components/ui; Verify the component's usage instructions before implementing."
         }
       ]
     }

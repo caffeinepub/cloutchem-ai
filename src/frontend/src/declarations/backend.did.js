@@ -8,6 +8,17 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -20,15 +31,27 @@ export const ShoppingItem = IDL.Record({
   'priceInCents' : IDL.Nat,
   'productDescription' : IDL.Text,
 });
-export const Principal = IDL.Principal;
 export const SubscriptionTier = IDL.Variant({
   'pro' : IDL.Null,
   'free' : IDL.Null,
 });
+export const Principal = IDL.Principal;
 export const UserProfile = IDL.Record({
-  'principal' : Principal,
   'createdAt' : IDL.Int,
   'tier' : SubscriptionTier,
+  'caller' : Principal,
+});
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const CaptureType = IDL.Variant({
+  'video' : IDL.Null,
+  'photo' : IDL.Null,
+});
+export const Capture = IDL.Record({
+  'id' : IDL.Text,
+  'blob' : ExternalBlob,
+  'createdAt' : IDL.Int,
+  'aiCaption' : IDL.Text,
+  'captureType' : CaptureType,
 });
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
@@ -65,6 +88,32 @@ export const TransformationOutput = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createCheckoutSession' : IDL.Func(
@@ -72,9 +121,11 @@ export const idlService = IDL.Service({
       [IDL.Text],
       [],
     ),
+  'deleteCapture' : IDL.Func([IDL.Text], [], []),
   'getAllUserProfiles' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [UserProfile], []),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getMyCaptures' : IDL.Func([], [IDL.Vec(Capture)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
   'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
   'hasSecurityQuestions' : IDL.Func([], [IDL.Bool], ['query']),
@@ -86,6 +137,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveCapture' : IDL.Func([Capture], [], []),
   'setSecurityQuestions' : IDL.Func([IDL.Vec(SecurityQuestion)], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'transform' : IDL.Func(
@@ -104,6 +156,17 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -116,12 +179,21 @@ export const idlFactory = ({ IDL }) => {
     'priceInCents' : IDL.Nat,
     'productDescription' : IDL.Text,
   });
-  const Principal = IDL.Principal;
   const SubscriptionTier = IDL.Variant({ 'pro' : IDL.Null, 'free' : IDL.Null });
+  const Principal = IDL.Principal;
   const UserProfile = IDL.Record({
-    'principal' : Principal,
     'createdAt' : IDL.Int,
     'tier' : SubscriptionTier,
+    'caller' : Principal,
+  });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const CaptureType = IDL.Variant({ 'video' : IDL.Null, 'photo' : IDL.Null });
+  const Capture = IDL.Record({
+    'id' : IDL.Text,
+    'blob' : ExternalBlob,
+    'createdAt' : IDL.Int,
+    'aiCaption' : IDL.Text,
+    'captureType' : CaptureType,
   });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
@@ -155,6 +227,32 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createCheckoutSession' : IDL.Func(
@@ -162,9 +260,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Text],
         [],
       ),
+    'deleteCapture' : IDL.Func([IDL.Text], [], []),
     'getAllUserProfiles' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [UserProfile], []),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getMyCaptures' : IDL.Func([], [IDL.Vec(Capture)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
     'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
     'hasSecurityQuestions' : IDL.Func([], [IDL.Bool], ['query']),
@@ -176,6 +276,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveCapture' : IDL.Func([Capture], [], []),
     'setSecurityQuestions' : IDL.Func([IDL.Vec(SecurityQuestion)], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'transform' : IDL.Func(

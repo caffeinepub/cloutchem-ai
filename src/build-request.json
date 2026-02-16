@@ -1,114 +1,86 @@
 {
   "kind": "build_request",
-  "title": "Add account recovery via user-defined security questions (2+ required)",
+  "title": "Add FAQ & Help Center page linked from footer",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Extend the backend user account data to support user-defined security questions that are set up on first sign-in: store at least two question/answer pairs per principal and expose whether the caller has completed security-question setup.",
-      "target": "backend",
+      "text": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "we could do security questions",
-          "choose there own and 2 ore more required they should be set up during sign up"
+          "make it a FAQ page"
         ]
       },
       "acceptanceCriteria": [
-        "Backend persists a per-principal security-question configuration separate from (or in addition to) the existing UserProfile record.",
-        "Caller can query a boolean status indicating whether they have completed security-question setup.",
-        "Backend enforces a minimum of 2 security questions when saving setup.",
-        "Answer data is not stored in plaintext (store a non-reversible representation such as a salted hash)."
+        "A new React page exists at a dedicated route and renders the FAQ title, short description, and all Q/A items from the user-provided content.",
+        "The Support email is displayed as “infocloudchemai@gmail.com” and clicking it opens the user’s email client via a mailto link.",
+        "All user-facing text on the page is in English and matches the provided FAQ wording (including plan details and capture instructions)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add backend endpoints to (a) set initial security questions for the authenticated caller and (b) verify answers for the authenticated caller, enabling a recovery flow that allows the caller to reset/change their security questions after successful verification.",
-      "target": "backend",
+      "text": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Add password reset flow using security questions (user-defined; require 2+; set up during signup; no email)"
+          "put it a brand new page in the app"
         ]
       },
       "acceptanceCriteria": [
-        "There is a backend method to set/replace the caller’s security questions, rejecting inputs with fewer than 2 questions.",
-        "There is a backend method to verify the caller’s submitted answers against the stored answers and return success/failure without revealing stored answers.",
-        "Unauthorized callers (not authenticated / lacking required permission) are rejected consistently with existing access-control patterns."
+        "Navigating directly to /faq renders the FAQ & Help Center page.",
+        "The FAQ route is not protected by authentication guards (unlike /dashboard, /camera, /my-captures, etc.)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
+      "text": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "they should be set up during sign up"
+          "footer"
         ]
       },
       "acceptanceCriteria": [
-        "After Internet Identity login, the app checks backend security-question setup status.",
-        "If not set up, the user is routed to or shown a dedicated setup UI that requires at least two Q/A entries and validates required fields.",
-        "On successful save, the user can proceed to the dashboard and protected routes as normal.",
-        "All user-facing text is in English and does not imply CloudCam AI can reset an Internet Identity password."
+        "The footer includes a Link that navigates to the FAQ route.",
+        "The footer link styling matches the existing footer link styles (consistent hover/underline behavior)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
+      "text": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "we can add password‑reset support next",
-          "we could do security questions"
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "There is a UI route/page accessible to authenticated users where they can answer their security questions.",
-        "If verification succeeds, the UI allows the user to set new security questions (minimum 2) and saves them via the backend.",
-        "If verification fails, the UI shows a clear error state without leaking which answers were incorrect.",
-        "No email, SMS, or external messaging is used anywhere in the flow."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "If adding new persistent backend state to support security questions changes stable data structures, add/adjust backend upgrade migration logic according to the project’s conditional migration policy so upgrades do not trap or lose existing user profiles.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "ready u can build",
-          "yes plz"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Upgrading the canister preserves existing userProfiles data.",
-        "New security-question state initializes safely for existing users (treated as “not set up”).",
-        "No migration file is added unless it is necessary for an upgrade-safe schema/state change."
+        "The FAQ page uses the same general layout pattern as existing static pages (container spacing, Card styling, section headers, readable body text).",
+        "The page remains responsive and readable on mobile and desktop."
       ]
     }
   ],
   "constraints": [
-    "Do not implement a custom username/password authentication system; Internet Identity remains the only sign-in mechanism.",
-    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything inside frontend/src/components/ui (compose these components instead).",
-    "Do not add any email-based password reset or outbound email integration."
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or any files under frontend/src/components/ui (compose them instead).",
+    "Keep backend as a single-actor Motoko canister; no backend changes are required for a static FAQ page."
   ],
   "nonGoals": [
-    "Resetting or recovering an Internet Identity account/password (outside the app’s control).",
-    "Unauthenticated account recovery (since the app relies on Internet Identity authentication).",
-    "Adding real-time messaging, SMS, push notifications, or third-party auth providers."
+    "Do not implement a Help Center ticketing system or contact form submission backend.",
+    "Do not change authentication behavior, subscription logic, or capture storage behavior.",
+    "Do not add new billing plans or modify Stripe configuration."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,51 +1,33 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T23:33:46.514Z",
-  "summary": "Frontend adds security-questions setup and account-recovery UIs with route protection and onboarding enforcement, plus React Query hooks calling new actor methods. Backend adds new persistent state and a migration stub, but the diff evidence does not show required backend endpoints or non-plaintext answer storage.",
+  "generatedAt": "2026-02-16T01:05:56.626Z",
+  "summary": "Added a new FAQ page component and wired it into TanStack Router at /faq, plus added a footer link to /faq. However, the FAQ page content shown in the diff appears to be newly authored and does not demonstrate the exact user-provided FAQ wording or the required support email/mailto behavior.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Answer data is not stored in plaintext (store a non-reversible representation such as a salted hash).",
-      "reason": "Backend types for security questions store `answer : Text` directly, and the migration initializes `userSecurityQuestions` as `List.List<SecurityQuestion>` where `SecurityQuestion` also contains plaintext `answer : Text`; no hashing/salting logic is shown in the diff summary.",
+      "requirement": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "reason": "The added page content in the diff does not show the exact requested title (“CloudCam AI – FAQ & Help Center”), does not provide evidence of using the user-supplied FAQ wording, and does not show the required support email “infocloudchemai@gmail.com” rendered as both text and a mailto link (the file is truncated before any Support section/email is evidenced).",
       "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Add backend endpoints to set/replace caller security questions, verify submitted answers, and allow resetting questions after successful verification, with auth consistent with existing access-control patterns.",
-      "reason": "Frontend hooks call `actor.hasSecurityQuestions()`, `actor.setSecurityQuestions(...)`, `actor.verifySecurityQuestions(...)`, and `actor.resetSecurityQuestions(...)`, but the backend diff excerpt for `backend/main.mo` does not show these methods implemented (file is truncated and no endpoint definitions are visible).",
-      "evidence": [
-        "frontend/src/hooks/useSecurityQuestions.ts",
-        "backend/main.mo"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Project state describes a \"password-reset\" feature via security questions.",
-      "reason": "BuildRequest explicitly disallows custom username/password auth and clarifies the non-goal of resetting/recovering Internet Identity credentials; representing this as a password-reset feature is not requested and may be misleading.",
+      "description": "Authored FAQ questions/answers (e.g., Free plan includes “10 AI-generated captions per month”, Pro plan “Unlimited AI captions… full analytics”, camera instructions) that are not evidenced as the user-provided exact FAQ wording.",
+      "reason": "REQ-1 requires using the exact FAQ content provided by the user; the diff shows newly written FAQ copy that may not match the provided wording.",
       "evidence": [
-        "project_state.json"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.66,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/layout/Header.tsx",
-    "frontend/src/components/security/SecurityQuestionsForm.tsx",
-    "frontend/src/hooks/useSecurityQuestions.ts",
-    "frontend/src/pages/AccountRecoveryPage.tsx",
-    "frontend/src/pages/CameraPage.tsx",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/pages/SecurityQuestionsSetupPage.tsx",
+    "frontend/src/components/layout/Footer.tsx",
+    "frontend/src/pages/FaqHelpCenterPage.tsx",
     "project_state.json"
   ]
 }

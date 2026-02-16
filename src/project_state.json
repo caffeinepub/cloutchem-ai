@@ -1,27 +1,40 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project includes account password-reset functionality implemented via user-defined security questions (set during signup), with email disabled.",
+  "summary": "CloudCam AI app: add a new FAQ & Help Center page, linked from the footer, styled consistently with existing pages.",
   "architectural_notes": [
-    "Email is disabled; password reset must not rely on email delivery.",
-    "Security questions are user-defined and must be configured during signup; password reset requires answering 2+ questions."
+    "Add a new FAQ page route/page and include a footer navigation link; match existing app styling/layout."
   ],
-  "known_issues": [
-    "Build/deployment attempt failed with error: 'AI couldn't implement that request'; user requested a retry."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-a-frontend-security-questions-setup-step-that-occurs-during-initial-onboarding-interpreted-as-the-user-s-first-successful-internet-identity-sign-in-if-the-authenticated-user-has-not-set-security-questions-yet-prompt-them-to-create-at-least-two-custom-questions-and-answers-before-continuing-to-the-dashboard-camera-experience",
-      "title": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
+      "id": "feature-create-a-new-public-page-component-for-cloudcam-ai-faq-help-center-using-the-exact-faq-content-provided-by-the-user-including-sections-for-subscriptions-camera-captures-account-login-and-support-with-the-support-email-shown-as-text-and-as-a-mailto-link",
+      "title": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-public-route-for-the-faq-page-e-g-faq-in-the-tanstack-router-configuration-so-it-is-accessible-without-authentication",
+      "title": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-footer-navigation-link-to-the-new-faq-page-alongside-the-existing-terms-and-privacy-links",
+      "title": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-frontend-account-recovery-page-for-authenticated-users-that-verifies-their-security-question-answers-and-upon-success-allows-them-to-reset-change-their-security-questions-no-email-flow",
-      "title": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
+      "id": "feature-style-the-faq-page-to-match-the-existing-legal-static-pages-e-g-terms-and-privacy-policy-and-the-app-s-current-visual-system-card-layout-separators-typography-spacing",
+      "title": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
       "reqIds": [
         "REQ-4"
       ],
@@ -31,36 +44,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add password reset flow using security questions (user-defined; require 2+; set up during signup; no email)",
+      "summary": "Create a brand-new 'FAQ & Help Center' page (CloudCam AI) using provided content, styled like existing pages, and add a footer link to it.",
       "reqIds": [],
-      "status": "in_progress"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Extend the backend user account data to support user-defined security questions that are set up on first sign-in: store at least two question/answer pairs per principal and expose whether the caller has completed security-question setup.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Add backend endpoints to (a) set initial security questions for the authenticated caller and (b) verify answers for the authenticated caller, enabling a recovery flow that allows the caller to reset/change their security questions after successful verification.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "If adding new persistent backend state to support security questions changes stable data structures, add/adjust backend upgrade migration logic according to the project’s conditional migration policy so upgrades do not trap or lose existing user profiles.",
-      "reqIds": [
-        "REQ-5"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "Add account recovery via user-defined security questions (2+ required)",
+  "gameProjectType": "none",
+  "projectName": "CloudCam AI",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

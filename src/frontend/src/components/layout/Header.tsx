@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2, LogOut, LayoutDashboard, Video, Shield } from 'lucide-react';
+import { Loader2, LogOut, LayoutDashboard, Video, Shield, Camera } from 'lucide-react';
 
 export default function Header() {
   const { identity, clear, loginStatus } = useInternetIdentity();
@@ -46,6 +46,12 @@ export default function Header() {
                   Camera
                 </Button>
               </Link>
+              <Link to="/my-captures">
+                <Button variant="ghost" className="gap-2">
+                  <Camera className="w-4 h-4" />
+                  My Captures
+                </Button>
+              </Link>
               <Link to="/account-recovery">
                 <Button variant="ghost" className="gap-2">
                   <Shield className="w-4 h-4" />
@@ -68,8 +74,8 @@ export default function Header() {
             </>
           ) : (
             <Link to="/login">
-              <Button className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold shadow-lg shadow-amber-500/20">
-                Sign In
+              <Button className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold">
+                Login
               </Button>
             </Link>
           )}

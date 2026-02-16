@@ -17,8 +17,12 @@ import {
   Loader2,
   SwitchCamera,
   Pause,
+  Save,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import SaveCaptureDialog from '../components/captures/SaveCaptureDialog';
+import { generateCaptions } from '../utils/captionGenerator';
+import { toast } from 'sonner';
 
 export default function CameraPage() {
   const navigate = useNavigate();
@@ -47,6 +51,7 @@ export default function CameraPage() {
     isRecording,
     isPaused,
     recordedUrl,
+    recordedBlob,
     error: recordingError,
     startRecording,
     stopRecording,
@@ -56,7 +61,15 @@ export default function CameraPage() {
   } = useVideoRecorder();
 
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
+  const [capturedPhotoFile, setCapturedPhotoFile] = useState<File | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [mediaToSave, setMediaToSave] = useState<{
+    file: File | null;
+    type: 'photo' | 'video';
+    previewUrl: string | null;
+    caption: string;
+  } | null>(null);
 
   // Redirect to security questions setup if not completed
   useEffect(() => {
@@ -108,6 +121,7 @@ export default function CameraPage() {
     if (photoFile) {
       const photoUrl = URL.createObjectURL(photoFile);
       setCapturedPhoto(photoUrl);
+      setCapturedPhotoFile(photoFile);
     }
   };
 
@@ -115,7 +129,62 @@ export default function CameraPage() {
     if (capturedPhoto) {
       URL.revokeObjectURL(capturedPhoto);
       setCapturedPhoto(null);
+      setCapturedPhotoFile(null);
     }
+  };
+
+  const handleSavePhoto = () => {
+    if (!capturedPhotoFile || !capturedPhoto) return;
+
+    const captions = generateCaptions({
+      topic: 'captured moment',
+      tone: 'casual',
+      platform: 'instagram',
+    });
+
+    const caption = captions.length > 0 ? captions[0].text : 'Check out this amazing capture!';
+
+    setMediaToSave({
+      file: capturedPhotoFile,
+      type: 'photo',
+      previewUrl: capturedPhoto,
+      caption,
+    });
+    setSaveDialogOpen(true);
+  };
+
+  const handleSaveVideo = () => {
+    if (!recordedBlob || !recordedUrl) return;
+
+    const videoFile = new File([recordedBlob], `video-${Date.now()}.webm`, {
+      type: recordedBlob.type,
+    });
+
+    const captions = generateCaptions({
+      topic: 'video recording',
+      tone: 'casual',
+      platform: 'instagram',
+    });
+
+    const caption = captions.length > 0 ? captions[0].text : 'Check out this amazing video!';
+
+    setMediaToSave({
+      file: videoFile,
+      type: 'video',
+      previewUrl: recordedUrl,
+      caption,
+    });
+    setSaveDialogOpen(true);
+  };
+
+  const handleSaveSuccess = () => {
+    toast.success('Capture saved successfully!');
+    if (mediaToSave?.type === 'photo') {
+      handleClearPhoto();
+    } else {
+      handleClearRecording();
+    }
+    setMediaToSave(null);
   };
 
   const handleSwitchCamera = async () => {
@@ -337,19 +406,19 @@ export default function CameraPage() {
               {recordedUrl && (
                 <div className="flex gap-3">
                   <Button
-                    onClick={handleClearRecording}
-                    variant="outline"
-                    className="flex-1 gap-2 border-accent/30 hover:bg-accent/10"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Clear Recording
-                  </Button>
-                  <Button
-                    onClick={startCamera}
+                    onClick={handleSaveVideo}
                     className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold gap-2"
                   >
-                    <Video className="w-4 h-4" />
-                    Record Again
+                    <Save className="w-4 h-4" />
+                    Save to My Captures
+                  </Button>
+                  <Button
+                    onClick={handleClearRecording}
+                    variant="outline"
+                    className="gap-2 border-accent/30 hover:bg-accent/10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Clear
                   </Button>
                 </div>
               )}
@@ -372,19 +441,41 @@ export default function CameraPage() {
                 <div className="relative w-full bg-black rounded-lg overflow-hidden">
                   <img src={capturedPhoto} alt="Captured" className="w-full h-auto" />
                 </div>
-                <Button
-                  onClick={handleClearPhoto}
-                  variant="outline"
-                  className="w-full gap-2 border-accent/30 hover:bg-accent/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Clear Photo
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleSavePhoto}
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-background font-semibold gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    Save to My Captures
+                  </Button>
+                  <Button
+                    onClick={handleClearPhoto}
+                    variant="outline"
+                    className="gap-2 border-accent/30 hover:bg-accent/10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Clear
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
+
+      {/* Save Capture Dialog */}
+      {mediaToSave && (
+        <SaveCaptureDialog
+          open={saveDialogOpen}
+          onOpenChange={setSaveDialogOpen}
+          mediaFile={mediaToSave.file}
+          mediaType={mediaToSave.type}
+          previewUrl={mediaToSave.previewUrl}
+          initialCaption={mediaToSave.caption}
+          onSuccess={handleSaveSuccess}
+        />
+      )}
     </div>
   );
 }

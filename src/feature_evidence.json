@@ -2,16 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-frontend-security-questions-setup-step-that-occurs-during-initial-onboarding-interpreted-as-the-user-s-first-successful-internet-identity-sign-in-if-the-authenticated-user-has-not-set-security-questions-yet-prompt-them-to-create-at-least-two-custom-questions-and-answers-before-continuing-to-the-dashboard-camera-experience",
-      "featureTitle": "Add a frontend “Security Questions Setup” step that occurs during initial onboarding (interpreted as the user’s first successful Internet Identity sign-in): if the authenticated user has not set security questions yet, prompt them to create at least two custom questions and answers before continuing to the dashboard/camera experience.",
+      "featureId": "feature-create-a-new-public-page-component-for-cloudcam-ai-faq-help-center-using-the-exact-faq-content-provided-by-the-user-including-sections-for-subscriptions-camera-captures-account-login-and-support-with-the-support-email-shown-as-text-and-as-a-mailto-link",
+      "featureTitle": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/security/SecurityQuestionsForm.tsx",
-        "frontend/src/hooks/useSecurityQuestions.ts",
-        "frontend/src/pages/CameraPage.tsx",
-        "frontend/src/pages/DashboardPage.tsx",
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/pages/SecurityQuestionsSetupPage.tsx"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -22,7 +16,54 @@
         "github-export-icp-cli@1.0.0",
         "stripe@3.0.0",
         "http-outcalls@3.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-new-public-route-for-the-faq-page-e-g-faq-in-the-tanstack-router-configuration-so-it-is-accessible-without-authentication",
+      "featureTitle": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0",
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-footer-navigation-link-to-the-new-faq-page-alongside-the-existing-terms-and-privacy-links",
+      "featureTitle": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
+      "files": [
+        "frontend/src/components/layout/Footer.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0",
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-3"
@@ -30,13 +71,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-frontend-account-recovery-page-for-authenticated-users-that-verifies-their-security-question-answers-and-upon-success-allows-them-to-reset-change-their-security-questions-no-email-flow",
-      "featureTitle": "Add a frontend “Account Recovery” page for authenticated users that verifies their security-question answers and, upon success, allows them to reset/change their security questions (no email flow).",
+      "featureId": "feature-style-the-faq-page-to-match-the-existing-legal-static-pages-e-g-terms-and-privacy-policy-and-the-app-s-current-visual-system-card-layout-separators-typography-spacing",
+      "featureTitle": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/Header.tsx",
-        "frontend/src/hooks/useSecurityQuestions.ts",
-        "frontend/src/pages/AccountRecoveryPage.tsx"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -47,7 +85,8 @@
         "github-export-icp-cli@1.0.0",
         "stripe@3.0.0",
         "http-outcalls@3.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-4"

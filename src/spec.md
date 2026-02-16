@@ -1,13 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add account recovery within the app via user-defined security questions (minimum 2), set up during first onboarding after Internet Identity sign-in.
+**Goal:** Add a public “CloudCam AI – FAQ & Help Center” page and link to it from the app footer.
 
 **Planned changes:**
-- Extend backend user account state to persist per-user security question/answer pairs (minimum 2), with answers stored as a non-reversible salted hash, and expose a boolean indicating whether setup is completed.
-- Add backend endpoints for authenticated users to (a) set/replace security questions (enforcing 2+), and (b) verify submitted answers to enable a recovery flow that allows resetting/changing security questions after successful verification.
-- Add a frontend “Security Questions Setup” onboarding step shown after login when setup is not complete, requiring at least two custom Q/A entries before proceeding to the dashboard/protected areas.
-- Add a frontend “Account Recovery” page for authenticated users to answer their security questions; on success, allow setting new security questions (minimum 2); on failure, show a generic error without revealing which answers were wrong.
-- Add/adjust backend upgrade/migration handling as needed so existing user profiles remain intact and existing users default to “not set up.”
+- Create a new public FAQ & Help Center page that renders the user-provided English FAQ content, including sections for Subscriptions, Camera & Captures, Account & Login, and Support.
+- Display the support email as “infocloudchemai@gmail.com” both as visible text and as a clickable `mailto:` link.
+- Add a new public route (e.g., `/faq`) in the TanStack Router so the page is accessible without authentication.
+- Add a footer navigation link to the FAQ page alongside existing Terms and Privacy links, matching current footer link styling.
+- Style the FAQ page to match existing static/legal pages (layout, Card usage, typography, spacing, separators) and keep it responsive.
 
-**User-visible outcome:** After signing in, users who haven’t set security questions must create at least two before using the app; signed-in users can later visit an account recovery page to verify answers and then change/reset their security questions (without email/SMS).
+**User-visible outcome:** Users can visit `/faq` (without signing in) to read the FAQ & Help Center content, and can navigate to it from the footer; clicking the support email opens their email client.

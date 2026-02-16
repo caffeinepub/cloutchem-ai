@@ -22,6 +22,18 @@ export default function Footer() {
             >
               Terms
             </Link>
+            <Link 
+              to="/privacy-policy" 
+              className="text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              Privacy
+            </Link>
+            <Link 
+              to="/faq" 
+              className="text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              FAQ
+            </Link>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
