@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-a-new-public-page-component-for-cloudcam-ai-faq-help-center-using-the-exact-faq-content-provided-by-the-user-including-sections-for-subscriptions-camera-captures-account-login-and-support-with-the-support-email-shown-as-text-and-as-a-mailto-link",
-      "featureTitle": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "featureId": "feature-add-a-client-side-search-bar-to-the-faq-help-center-page-frontend-src-pages-faqhelpcenterpage-tsx-that-filters-the-displayed-faq-items-by-the-user-s-query",
+      "featureTitle": "Add a client-side search bar to the FAQ & Help Center page (frontend/src/pages/FaqHelpCenterPage.tsx) that filters the displayed FAQ items by the user’s query.",
       "files": [
         "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],
@@ -25,10 +25,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-new-public-route-for-the-faq-page-e-g-faq-in-the-tanstack-router-configuration-so-it-is-accessible-without-authentication",
-      "featureTitle": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "featureId": "feature-refactor-the-faq-page-content-into-a-structured-in-component-data-model-e-g-sections-items-with-question-answer-strings-so-filtering-can-be-applied-without-duplicating-markup",
+      "featureTitle": "Refactor the FAQ page content into a structured in-component data model (e.g., sections -> items with question/answer strings) so filtering can be applied without duplicating markup.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -48,10 +48,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-footer-navigation-link-to-the-new-faq-page-alongside-the-existing-terms-and-privacy-links",
-      "featureTitle": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
+      "featureId": "feature-define-clear-empty-state-behavior-for-the-faq-search-when-no-questions-match-the-query-show-an-english-no-results-message-and-provide-a-one-click-way-to-clear-the-search",
+      "featureTitle": "Define clear empty-state behavior for the FAQ search: when no questions match the query, show an English “no results” message and provide a one-click way to clear the search.",
       "files": [
-        "frontend/src/components/layout/Footer.tsx"
+        "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -71,8 +71,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-style-the-faq-page-to-match-the-existing-legal-static-pages-e-g-terms-and-privacy-policy-and-the-app-s-current-visual-system-card-layout-separators-typography-spacing",
-      "featureTitle": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
+      "featureId": "feature-ensure-the-search-ui-matches-the-existing-visual-system-used-on-the-faq-page-card-layout-typography-spacing-and-existing-amber-accent-usage",
+      "featureTitle": "Ensure the search UI matches the existing visual system used on the FAQ page (Card layout, typography, spacing, and existing amber accent usage).",
       "files": [
         "frontend/src/pages/FaqHelpCenterPage.tsx"
       ],

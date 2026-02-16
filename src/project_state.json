@@ -1,40 +1,38 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "CloudCam AI app: add a new FAQ & Help Center page, linked from the footer, styled consistently with existing pages.",
-  "architectural_notes": [
-    "Add a new FAQ page route/page and include a footer navigation link; match existing app styling/layout."
-  ],
+  "summary": "Building an FAQ page with a search bar feature.",
+  "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-new-public-page-component-for-cloudcam-ai-faq-help-center-using-the-exact-faq-content-provided-by-the-user-including-sections-for-subscriptions-camera-captures-account-login-and-support-with-the-support-email-shown-as-text-and-as-a-mailto-link",
-      "title": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "id": "feature-add-a-client-side-search-bar-to-the-faq-help-center-page-frontend-src-pages-faqhelpcenterpage-tsx-that-filters-the-displayed-faq-items-by-the-user-s-query",
+      "title": "Add a client-side search bar to the FAQ & Help Center page (frontend/src/pages/FaqHelpCenterPage.tsx) that filters the displayed FAQ items by the user’s query.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-new-public-route-for-the-faq-page-e-g-faq-in-the-tanstack-router-configuration-so-it-is-accessible-without-authentication",
-      "title": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "id": "feature-refactor-the-faq-page-content-into-a-structured-in-component-data-model-e-g-sections-items-with-question-answer-strings-so-filtering-can-be-applied-without-duplicating-markup",
+      "title": "Refactor the FAQ page content into a structured in-component data model (e.g., sections -> items with question/answer strings) so filtering can be applied without duplicating markup.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-footer-navigation-link-to-the-new-faq-page-alongside-the-existing-terms-and-privacy-links",
-      "title": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
+      "id": "feature-define-clear-empty-state-behavior-for-the-faq-search-when-no-questions-match-the-query-show-an-english-no-results-message-and-provide-a-one-click-way-to-clear-the-search",
+      "title": "Define clear empty-state behavior for the FAQ search: when no questions match the query, show an English “no results” message and provide a one-click way to clear the search.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-style-the-faq-page-to-match-the-existing-legal-static-pages-e-g-terms-and-privacy-policy-and-the-app-s-current-visual-system-card-layout-separators-typography-spacing",
-      "title": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
+      "id": "feature-ensure-the-search-ui-matches-the-existing-visual-system-used-on-the-faq-page-card-layout-typography-spacing-and-existing-amber-accent-usage",
+      "title": "Ensure the search UI matches the existing visual system used on the FAQ page (Card layout, typography, spacing, and existing amber accent usage).",
       "reqIds": [
         "REQ-4"
       ],
@@ -44,13 +42,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Create a brand-new 'FAQ & Help Center' page (CloudCam AI) using provided content, styled like existing pages, and add a footer link to it.",
+      "summary": "Add a search bar to the FAQ page (search/filter FAQ entries).",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "CloudCam AI",
+  "projectName": "Add a search bar to the FAQ & Help Center page",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

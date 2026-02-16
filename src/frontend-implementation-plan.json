@@ -1,66 +1,69 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add public FAQ & Help Center page and footer link",
+  "title": "FAQ & Help Center client-side search",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Create a new public “CloudCam AI – FAQ & Help Center” page rendering the exact user-provided FAQ content and a support email mailto link.",
+      "summary": "Add a client-side search bar that filters FAQ items by query text.",
       "acceptanceCriteria": [
-        "A new React page exists at a dedicated route and renders the FAQ title, short description, and all Q/A items from the user-provided content.",
-        "The Support email is displayed as “infocloudchemai@gmail.com” and clicking it opens the user’s email client via a mailto link.",
-        "All user-facing text on the page is in English and matches the provided FAQ wording (including plan details and capture instructions)."
+        "FAQ page shows a visible search input near the top of the FAQ content (under the title/intro).",
+        "Typing a query filters FAQ entries in-place without navigating away or requiring authentication.",
+        "Search matches against the question text and answer text (case-insensitive).",
+        "When the search box is empty, the full original FAQ content is shown (no content loss)."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
-          "operation": "create",
-          "description": "Implement the new static FAQ & Help Center React page and paste in the exact FAQ title/description and all Q/A content (Subscriptions, Camera & Captures, Account & Login, Support) exactly as provided by the user; include the support email as visible text and as a mailto link for infocloudchemai@gmail.com. Use shadcn-ui Card and Separator components to structure the content; Verify the component's usage instructions before implementing."
+          "operation": "modify",
+          "description": "Implement local query state and in-place filtering for the FAQ list by matching the query (case-insensitive) against both question and answer text, rendering results without navigation or auth requirements."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Register a new public /faq route in TanStack Router without authentication guards.",
+      "summary": "Refactor FAQ content into a structured in-component data model and render from that model.",
       "acceptanceCriteria": [
-        "Navigating directly to /faq renders the FAQ & Help Center page.",
-        "The FAQ route is not protected by authentication guards (unlike /dashboard, /camera, /my-captures, etc.)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add an import for the new FaqHelpCenterPage and register a new TanStack Router route at path \"/faq\" under the root route, ensuring there is no beforeLoad redirect/auth guard so it remains publicly accessible."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add a footer navigation link to /faq alongside Terms and Privacy links with matching styling.",
-      "acceptanceCriteria": [
-        "The footer includes a Link that navigates to the FAQ route.",
-        "The footer link styling matches the existing footer link styles (consistent hover/underline behavior)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/layout/Footer.tsx",
-          "operation": "modify",
-          "description": "Add a new TanStack Router Link to \"/faq\" labeled \"FAQ\" alongside existing Terms and Privacy links, reusing the same className styling for consistent hover/underline behavior."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Style the FAQ page to match existing static legal pages and the app’s visual system (Card layout, separators, typography, spacing).",
-      "acceptanceCriteria": [
-        "The FAQ page uses the same general layout pattern as existing static pages (container spacing, Card styling, section headers, readable body text).",
-        "The page remains responsive and readable on mobile and desktop."
+        "FAQ sections and Q/A content remain exactly the same as before when no search is applied (including the support email and mailto link).",
+        "Filtering is applied based on the data model and the UI is rendered from that model (no hardcoded duplicated Q/A blocks for filtered vs unfiltered states)."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
           "operation": "modify",
-          "description": "Align the FAQ page layout and typography to match existing static pages (e.g., TermsPage/PrivacyPolicyPage): use the same gradient background, container sizing/spacing, Card styling, section headers, and Separator usage for readability and responsive behavior. Use shadcn-ui Card and Separator components rather than editing any files under frontend/src/components/ui; Verify the component's usage instructions before implementing."
+          "description": "Convert the current static markup into an in-component data structure (sections with items containing question/answer strings and any needed rendering metadata) and render the full FAQ UI from this model so the same rendering path supports both filtered and unfiltered views while preserving existing text and the support mailto link."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add empty-state UI for no matching results with a one-click clear action.",
+      "acceptanceCriteria": [
+        "If the query returns zero matches, the page shows a friendly English message such as “No results found” within the FAQ card content area.",
+        "A clear action is available (e.g., a clear button) that resets the query to empty and restores all FAQ content.",
+        "Clearing the query restores the original section ordering and all entries."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
+          "operation": "modify",
+          "description": "When filtering yields zero items, show an in-card empty-state message (e.g., “No results found”) and provide a clear/reset control that sets the query back to empty and restores the original section ordering and full FAQ list."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Style the search UI to match the existing FAQ page visual system and ensure accessibility/responsiveness.",
+      "acceptanceCriteria": [
+        "Search input styling is consistent with the app’s Tailwind/shadcn look-and-feel on the FAQ page (no unstyled default input).",
+        "Search control has an accessible label (visible or aria-label) and reasonable focus styles.",
+        "The search bar does not break the current responsive layout of the FAQ page."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/FaqHelpCenterPage.tsx",
+          "operation": "modify",
+          "description": "Add a styled search control placed under the title/intro using the existing Card/Tailwind styling patterns and amber accents already used on the page; ensure an accessible label/aria-label, visible focus styles, and a responsive layout that preserves the current spacing/typography."
         }
       ]
     }

@@ -1,89 +1,102 @@
 {
   "kind": "build_request",
-  "title": "Add FAQ & Help Center page linked from footer",
+  "title": "Add a search bar to the FAQ & Help Center page",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Create a new public page component for “CloudCam AI – FAQ & Help Center” using the exact FAQ content provided by the user, including sections for Subscriptions, Camera & Captures, Account & Login, and Support with the support email shown as text and as a mailto link.",
+      "text": "Add a client-side search bar to the FAQ & Help Center page (frontend/src/pages/FaqHelpCenterPage.tsx) that filters the displayed FAQ items by the user’s query.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "make it a FAQ page"
+          "yes lets build a search bar"
         ]
       },
       "acceptanceCriteria": [
-        "A new React page exists at a dedicated route and renders the FAQ title, short description, and all Q/A items from the user-provided content.",
-        "The Support email is displayed as “infocloudchemai@gmail.com” and clicking it opens the user’s email client via a mailto link.",
-        "All user-facing text on the page is in English and matches the provided FAQ wording (including plan details and capture instructions)."
+        "FAQ page shows a visible search input near the top of the FAQ content (under the title/intro).",
+        "Typing a query filters FAQ entries in-place without navigating away or requiring authentication.",
+        "Search matches against the question text and answer text (case-insensitive).",
+        "When the search box is empty, the full original FAQ content is shown (no content loss)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add a new public route for the FAQ page (e.g., /faq) in the TanStack Router configuration so it is accessible without authentication.",
+      "text": "Refactor the FAQ page content into a structured in-component data model (e.g., sections -> items with question/answer strings) so filtering can be applied without duplicating markup.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "put it a brand new page in the app"
+          "yes lets build a search bar"
         ]
       },
       "acceptanceCriteria": [
-        "Navigating directly to /faq renders the FAQ & Help Center page.",
-        "The FAQ route is not protected by authentication guards (unlike /dashboard, /camera, /my-captures, etc.)."
+        "FAQ sections and Q/A content remain exactly the same as before when no search is applied (including the support email and mailto link).",
+        "Filtering is applied based on the data model and the UI is rendered from that model (no hardcoded duplicated Q/A blocks for filtered vs unfiltered states)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a footer navigation link to the new FAQ page, alongside the existing Terms and Privacy links.",
+      "text": "Define clear empty-state behavior for the FAQ search: when no questions match the query, show an English “no results” message and provide a one-click way to clear the search.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "footer"
+          "yes lets build a search bar"
         ]
       },
       "acceptanceCriteria": [
-        "The footer includes a Link that navigates to the FAQ route.",
-        "The footer link styling matches the existing footer link styles (consistent hover/underline behavior)."
+        "If the query returns zero matches, the page shows a friendly English message such as “No results found” within the FAQ card content area.",
+        "A clear action is available (e.g., a clear button) that resets the query to empty and restores all FAQ content.",
+        "Clearing the query restores the original section ordering and all entries."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Style the FAQ page to match the existing legal/static pages (e.g., Terms and Privacy Policy) and the app’s current visual system (Card layout, separators, typography, spacing).",
+      "text": "Ensure the search UI matches the existing visual system used on the FAQ page (Card layout, typography, spacing, and existing amber accent usage).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "yes"
+          "yes lets build a search bar"
         ]
       },
       "acceptanceCriteria": [
-        "The FAQ page uses the same general layout pattern as existing static pages (container spacing, Card styling, section headers, readable body text).",
-        "The page remains responsive and readable on mobile and desktop."
+        "Search input styling is consistent with the app’s Tailwind/shadcn look-and-feel on the FAQ page (no unstyled default input).",
+        "Search control has an accessible label (visible or aria-label) and reasonable focus styles.",
+        "The search bar does not break the current responsive layout of the FAQ page."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or any files under frontend/src/components/ui (compose them instead).",
-    "Keep backend as a single-actor Motoko canister; no backend changes are required for a static FAQ page."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui (compose existing UI components instead of modifying them).",
+    "Implement search purely on the client; no backend changes are required."
   ],
   "nonGoals": [
-    "Do not implement a Help Center ticketing system or contact form submission backend.",
-    "Do not change authentication behavior, subscription logic, or capture storage behavior.",
-    "Do not add new billing plans or modify Stripe configuration."
+    "Implementing backend/full-text search or persisting search queries server-side.",
+    "Adding new FAQ content or changing the meaning/text of existing FAQ questions/answers.",
+    "Adding real-time analytics/telemetry for search usage."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

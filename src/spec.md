@@ -1,13 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a public “CloudCam AI – FAQ & Help Center” page and link to it from the app footer.
+**Goal:** Add a client-side search experience to the FAQ & Help Center page so users can quickly filter FAQ entries by keyword without leaving the page.
 
 **Planned changes:**
-- Create a new public FAQ & Help Center page that renders the user-provided English FAQ content, including sections for Subscriptions, Camera & Captures, Account & Login, and Support.
-- Display the support email as “infocloudchemai@gmail.com” both as visible text and as a clickable `mailto:` link.
-- Add a new public route (e.g., `/faq`) in the TanStack Router so the page is accessible without authentication.
-- Add a footer navigation link to the FAQ page alongside existing Terms and Privacy links, matching current footer link styling.
-- Style the FAQ page to match existing static/legal pages (layout, Card usage, typography, spacing, separators) and keep it responsive.
+- Add a styled, accessible search input near the top of the FAQ content on `frontend/src/pages/FaqHelpCenterPage.tsx`.
+- Refactor existing FAQ content into an in-component structured data model (sections with Q/A items) and render the UI from that model.
+- Implement case-insensitive filtering across both question and answer text, preserving the original ordering when the query is empty.
+- Add an empty-results state (“No results found”) with a one-click clear action that restores the full FAQ content.
+- Ensure the search UI matches the existing FAQ page visual system (Card layout, typography, spacing, amber accents) and remains responsive.
 
-**User-visible outcome:** Users can visit `/faq` (without signing in) to read the FAQ & Help Center content, and can navigate to it from the footer; clicking the support email opens their email client.
+**User-visible outcome:** Users can type into a search bar on the FAQ page to instantly filter questions/answers, see a clear “no results” message when nothing matches, and clear the search to return to the full FAQ list.
